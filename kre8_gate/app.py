@@ -1,19 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from kre8_agent.agent import call_llm
-from kre8_think.engine import load_config, validate_plan
-from kre8_think.models import Plan
+from kre8_agent.agent import Kre8Agent
+from kre8_think.i2d2 import process_intent
 
 app = FastAPI()
+
+agent = Kre8Agent()
+
 
 class IntentRequest(BaseModel):
     intent: str
 
+
 @app.post("/plan")
 def create_plan(request: IntentRequest):
-    config = load_config()
-    raw_plan = call_llm(request.intent)
-    plan = Plan(**raw_plan)
-    validate_plan(plan, config)
-    return plan.dict()
+    plan = process_intent(request.intent, agent)
+    return plan.model_dump()
