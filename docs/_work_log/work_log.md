@@ -64,3 +64,46 @@ The API returned the expected stubbed plan JSON:
 - Surface `StructuredIntent` more explicitly for debugging / visibility
 - Begin replacing stub behavior incrementally
 - Move from curl-based interaction toward a simple UI-based interaction layer
+
+
+---
+
+## 2026-03-21
+
+### Objective
+Refine the product architecture and repo/documentation structure before introducing the first UI slice.
+
+### Architecture / Product Work Completed
+- Simulated the intended end-user workflow from Kiosk through SI, validation, pause, and DP delivery.
+- Refined the SI checkpoint behavior:
+  - SI is always generated
+  - validation occurs before plan generation
+  - the user is paused at a **Go / Review** checkpoint
+- Established that the request flow must be **realm-aware** because users assume existing defaults and platform context.
+- Defined the role of `kre8_realm` as the scoped operating context.
+- Confirmed that `kre8_laws` should remain reusable and globally defined, with realms binding to law sets rather than duplicating them.
+- Finalized **ARC** as the Architecture Catalog for reuse, retention, and user selection.
+- Named the admin/configuration surface **Whiteboard**.
+- Reviewed the current repository structure and produced a recommended near-term tree that preserves top-level components and adds new top-level component folders instead of introducing a `components/` root.
+- Produced missing README content for new and existing components and for hybrid central docs areas.
+
+### Repo / Documentation Direction Applied
+- Preserve existing top-level code component layout.
+- Add these new top-level component folders:
+  - `kre8_kiosk`
+  - `kre8_whiteboard`
+  - `kre8_realm`
+  - `kre8_laws`
+  - `kre8_arc`
+- Keep hybrid documentation:
+  - central `docs/` for product/system concepts
+  - component-local READMEs for later lift-and-shift
+
+### Notes
+- No code execution path was changed today.
+- Work was focused on architectural clarity, component naming, flow design, and documentation structure.
+
+### Next Coding / Repo Step
+- Normalize folders and canonical doc filenames in the repo.
+- Re-upload the updated repo tree/zip.
+- Generate and place the canonical README and central docs files into the aligned structure.
