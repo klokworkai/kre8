@@ -1,0 +1,67 @@
+# claude.log — kre8 Session History
+
+This file tracks what Claude has done in each working session — commits made, files changed, design decisions reached, and lines of code affected.
+
+---
+
+## Session — 2026-04-03
+
+### Context
+Onboarding session. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+No code written this session — all design, naming, and repo housekeeping.
+
+### Repo State
+- **From:** `kre8framework/kre8-framework-demo`
+- **To:** Pending transfer to `klokworkai/kre8` (manual step by John)
+
+### Files Deleted (by John, manually)
+```
+docs/_ideation/           (entire folder)
+docs/_state/              (entire folder)
+docs/_work_log/           (entire folder)
+docs/arc/                 (entire folder)
+docs/kiosk/               (entire folder)
+docs/laws/                (entire folder)
+docs/realms/              (entire folder)
+docs/whiteboard/          (entire folder)
+docs/components/          (entire folder)
+docs/architecture/        (entire folder)
+docs/_decisions/          (entire folder)
+docs/_schemas/            (entire folder)
+docs/docs_README.md
+docs/.DS_Store
+kre8_think/kre8_think_README.md
+kre8_agent/kre8_agent_README.md
+```
+
+### Files Added (this commit)
+```
+docs/architecture.md          ← system architecture + pipeline
+docs/components.md            ← full phased component registry
+docs/schemas/si-kanvas.md     ← StructuredIntent + Kanvas schema spec
+docs/decisions/adr.md         ← 6 ADRs (architecture decision records)
+docs/claude.log               ← this file
+```
+
+### Design Decisions Reached
+- Company renamed to klökwork Inc / klökwork AI
+- Product remains kre8 (by klökwork AI)
+- GitHub org: klokworkai, mono-repo: klokworkai/kre8
+- Full component renaming locked (kre8_think→kre8, kre8_agent→konnekt, etc.)
+- Component phasing defined: Phase 1 Pilot, Phase 2.1, Phase 2.2, Phase 3
+- DesignPlan renamed to Kanvas (schema level only)
+- StructuredIntent (SI) name retained
+- kure absorbs kcheck — validate + self-correct is one sub-module of koder
+- skout is the semantic search engine (searches katalog + kpedia)
+- kpedia has three collections: pillars, forums, utd_docs
+- koder owns Context7 integration (write-through cache into kpedia/utd_docs)
+- Cache strategy: cache-first, TTL-based refresh via kron (Phase 2.2 decision)
+- TF registry governance: kodex allowlist + kontext private registry URL
+- CLAUDE.md and ABOUTME.md reside at workspace root (not in repo)
+- claude.log lives in docs/ inside the repo
+
+### Pending (next session)
+- Transfer repo to klokworkai/kre8 (John to do manually in GitHub)
+- Rename existing component folders to match new naming convention
+- Update README.md at repo root
+- Begin Phase 1 implementation: full SI Pydantic schema in kre8/
