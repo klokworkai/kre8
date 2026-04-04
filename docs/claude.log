@@ -4,15 +4,48 @@ This file tracks what Claude has done in each working session — commits made, 
 
 ---
 
+## Session — 2026-04-04
+
+### Context
+Continuation of onboarding session. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+No code written — repo transfer, housekeeping, folder renames.
+
+### Repo Transfer
+- **From:** `kre8framework/kre8-framework-demo`
+- **To:** `klokworkai/kre8`
+- Transferred via GitHub Settings → Danger Zone → Transfer
+- Fresh clone into new workspace: `/Users/johnman/Documents/klokwork-ws/kre8`
+
+### Workspace Changes
+- New workspace folder: `klokwork-ws/` (replaces old `kre8-workspace/`)
+- `ABOUTME.md` and `CLAUDE.md` copied to new workspace root
+- `_misc/` folder cleaned — all stale handoff files deleted
+
+### Component Folders Renamed (git mv + push)
+```
+kre8_think      → kre8
+kre8_agent      → konnekt
+kre8_arc        → katalog
+kre8_cli        → kli
+kre8_gate       → gate
+kre8_laws       → kodex
+kre8_realm      → kontext
+kre8_kiosk      → kiosk
+kre8_whiteboard → konsole
+```
+
+### Pending
+- Update root README.md to reflect klökwork AI branding
+- Update CLAUDE.md in workspace root to reflect new workspace path
+- Begin Phase 1 implementation: full SI Pydantic schema in kre8/
+
+---
+
 ## Session — 2026-04-03
 
 ### Context
 Onboarding session. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
 No code written this session — all design, naming, and repo housekeeping.
-
-### Repo State
-- **From:** `kre8framework/kre8-framework-demo`
-- **To:** Pending transfer to `klokworkai/kre8` (manual step by John)
 
 ### Files Deleted (by John, manually)
 ```
@@ -34,7 +67,7 @@ kre8_think/kre8_think_README.md
 kre8_agent/kre8_agent_README.md
 ```
 
-### Files Added (this commit)
+### Files Added
 ```
 docs/architecture.md          ← system architecture + pipeline
 docs/components.md            ← full phased component registry
@@ -59,9 +92,3 @@ docs/claude.log               ← this file
 - TF registry governance: kodex allowlist + kontext private registry URL
 - CLAUDE.md and ABOUTME.md reside at workspace root (not in repo)
 - claude.log lives in docs/ inside the repo
-
-### Pending (next session)
-- Transfer repo to klokworkai/kre8 (John to do manually in GitHub)
-- Rename existing component folders to match new naming convention
-- Update README.md at repo root
-- Begin Phase 1 implementation: full SI Pydantic schema in kre8/
