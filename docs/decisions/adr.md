@@ -29,7 +29,7 @@ Format: Context → Options Considered → Decision → Rationale.
 - Never pause, fully automatic
 - Optional pause controlled by user/realm config
 
-**Decision:** SI exposes a `pause_for_review` flag. Kiosk surfaces the SI for editing if true. Realm config sets the default per environment.
+**Decision:** SI exposes a `pause_for_review` flag. Kiosk surfaces the SI for editing if true. Kontext config sets the default per environment.
 
 **Rationale:** Balances simplicity for casual users with control for advanced users. SI becomes a first-class auditable artifact rather than an internal implementation detail.
 
@@ -85,3 +85,13 @@ Format: Context → Options Considered → Decision → Rationale.
 - Mono-repo: `klokworkai/kre8`
 
 **Rationale:** "klok" means smart/wise in Swedish. "Klokwork" = clockwork precision + smart/wise. The k-naming convention creates brand cohesion across components while remaining typeable and functional.
+
+---
+
+## ADR-007 — kre8 is the Engine (not I2D2)
+
+**Context:** The orchestration engine was previously referred to as "I2D2" (Intelligent Infrastructure Design Decision). This created a naming split between the component (`kre8`) and its internal logic label (`I2D2`).
+
+**Decision:** Drop the I2D2 label entirely. The `kre8` component *is* the engine. No separate naming for the orchestration logic.
+
+**Rationale:** One name, one concept. kre8 owns the full pipeline from NLP → SI → Kanvas. I2D2 was an internal label that added unnecessary indirection. The pipeline is now simply referred to as "the kre8 pipeline."

@@ -10,13 +10,15 @@ kre8 is a Thinking Platform Layer (TPL). It translates natural language infrastr
 
 kre8 is **not** an IaC generator. It is a **decision engine** that produces structured, traceable, policy-governed outputs.
 
+The `kre8` component is the engine — it owns the full orchestration logic from NLP to Kanvas.
+
 ---
 
-## Core Pipeline (I2D2)
+## Core Pipeline
 
 ```
 NLP Input
-  → kre8 (intent extraction via konnekt/Clerk)
+  → kre8 (intent extraction via konnekt/Clerk → StructuredIntent)
   → konform (SI validated against kodex)
   → skout (search katalog + kpedia for matching patterns)
   → kre8 (Kanvas reasoning via konnekt/Architect)
@@ -58,10 +60,10 @@ See `docs/components.md` for the full phased component registry.
 
 ### Phase 1 (Pilot) — Active
 ```
-kiosk → gate → kre8 → konnekt → konform/kodex → koder → kure → kiosk
-                              ↕
-                           kontext
+kiosk → kre8 → konnekt → konform/kodex → koder → kure → kiosk
+                ↕
+             kontext
 ```
 
 ### Phase 2+ (Planned)
-Adds: skout, katalog, kpedia, komb, kron, konsole, kast, kick
+Adds: skout, katalog, kpedia, komb, kron, gate, konsole, kast, kick
