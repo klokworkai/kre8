@@ -1,27 +1,53 @@
 # claude.log — kre8 Session History
 
-This file tracks what Claude has done in each working session — commits made, files changed, design decisions reached, and lines of code affected.
+This file tracks what Claude has done in each working session.
+Includes: commits made, files changed, design decisions, and running line counts.
 
 ---
 
-## Session — 2026-04-04
+## Cumulative Stats
+
+| Metric | Count |
+|---|---|
+| Total sessions | 2 |
+| Total commits by Claude | 4 |
+| Total doc lines written by Claude | ~430 |
+| Total code lines written by Claude | 0 |
+
+---
+
+## Session — 2026-04-04 (Part 2)
 
 ### Context
-Continuation of onboarding session. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+Continuation. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+No code written — naming decisions, doc corrections, ADR additions.
+
+### Commits
+
+**Commit 1:** `docs: remove I2D2 label — kre8 is the engine`
+- `docs/architecture.md` — removed I2D2 references, gate removed from Phase 1 pipeline diagram
+- `docs/decisions/adr.md` — added ADR-007 (kre8 is the engine, I2D2 label dropped)
+- Lines changed: ~15 modified, ~12 added
+
+### Design Decisions Reached
+- I2D2 label dropped entirely — `kre8` component IS the engine, no separate label needed
+- ADR-007 added to record this formally
+- CLAUDE.md updated (workspace root) — new workspace path, new repo name, new component names, I2D2 removed
+
+### Files Updated (workspace root, not repo)
+- `CLAUDE.md` — full rewrite to reflect klokwork-ws, klokworkai/kre8, k-naming, no I2D2
+
+---
+
+## Session — 2026-04-04 (Part 1)
+
+### Context
+Continuation of onboarding. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
 No code written — repo transfer, housekeeping, folder renames.
 
-### Repo Transfer
-- **From:** `kre8framework/kre8-framework-demo`
-- **To:** `klokworkai/kre8`
-- Transferred via GitHub Settings → Danger Zone → Transfer
-- Fresh clone into new workspace: `/Users/johnman/Documents/klokwork-ws/kre8`
+### Commits
 
-### Workspace Changes
-- New workspace folder: `klokwork-ws/` (replaces old `kre8-workspace/`)
-- `ABOUTME.md` and `CLAUDE.md` copied to new workspace root
-- `_misc/` folder cleaned — all stale handoff files deleted
-
-### Component Folders Renamed (git mv + push)
+**Commit 1:** `refactor: rename component folders to klokwork k-naming convention` *(by John via git mv)*
 ```
 kre8_think      → kre8
 kre8_agent      → konnekt
@@ -34,10 +60,14 @@ kre8_kiosk      → kiosk
 kre8_whiteboard → konsole
 ```
 
-### Pending
-- Update root README.md to reflect klökwork AI branding
-- Update CLAUDE.md in workspace root to reflect new workspace path
-- Begin Phase 1 implementation: full SI Pydantic schema in kre8/
+**Commit 2:** `docs: update claude.log — repo transfer + folder renames`
+- `docs/claude.log` updated
+
+### Repo Changes (manual by John)
+- Transferred: `kre8framework/kre8-framework-demo` → `klokworkai/kre8`
+- New workspace: `/Users/johnman/Documents/klokwork-ws/`
+- Fresh clone of `klokworkai/kre8` into new workspace
+- `_misc/` cleaned — deleted: `gemini_handoff.md`, `kre8_claude_handoff.md`, `track_1_mvp.md`, `cursor_notes.txt`
 
 ---
 
@@ -45,9 +75,19 @@ kre8_whiteboard → konsole
 
 ### Context
 Onboarding session. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
-No code written this session — all design, naming, and repo housekeeping.
+No code written — all design, naming, and repo housekeeping.
 
-### Files Deleted (by John, manually)
+### Commits
+
+**Commit 1:** `docs: restructure — clean slate, new component registry, ADRs, schemas, claude.log`
+- `docs/architecture.md` — new, ~55 lines
+- `docs/components.md` — new, ~120 lines
+- `docs/schemas/si-kanvas.md` — new, ~95 lines
+- `docs/decisions/adr.md` — new, ~110 lines (6 ADRs)
+- `docs/claude.log` — new, ~60 lines
+- **Total lines added this commit: ~440**
+
+### Files Deleted (by John, manually before commit)
 ```
 docs/_ideation/           (entire folder)
 docs/_state/              (entire folder)
@@ -67,28 +107,20 @@ kre8_think/kre8_think_README.md
 kre8_agent/kre8_agent_README.md
 ```
 
-### Files Added
-```
-docs/architecture.md          ← system architecture + pipeline
-docs/components.md            ← full phased component registry
-docs/schemas/si-kanvas.md     ← StructuredIntent + Kanvas schema spec
-docs/decisions/adr.md         ← 6 ADRs (architecture decision records)
-docs/claude.log               ← this file
-```
-
 ### Design Decisions Reached
-- Company renamed to klökwork Inc / klökwork AI
-- Product remains kre8 (by klökwork AI)
+- Company: klökwork Inc / klökwork AI
+- Product: kre8 by klökwork AI
 - GitHub org: klokworkai, mono-repo: klokworkai/kre8
 - Full component renaming locked (kre8_think→kre8, kre8_agent→konnekt, etc.)
-- Component phasing defined: Phase 1 Pilot, Phase 2.1, Phase 2.2, Phase 3
+- Component phasing: Phase 1 Pilot, Phase 2.1, Phase 2.2, Phase 3
 - DesignPlan renamed to Kanvas (schema level only)
 - StructuredIntent (SI) name retained
-- kure absorbs kcheck — validate + self-correct is one sub-module of koder
-- skout is the semantic search engine (searches katalog + kpedia)
-- kpedia has three collections: pillars, forums, utd_docs
-- koder owns Context7 integration (write-through cache into kpedia/utd_docs)
-- Cache strategy: cache-first, TTL-based refresh via kron (Phase 2.2 decision)
+- kure absorbs kcheck — validate + self-correct is sub-module of koder
+- skout = semantic search engine (katalog + kpedia)
+- kpedia: three collections — pillars, forums, utd_docs
+- koder owns Context7 integration (write-through cache → kpedia/utd_docs)
+- Cache strategy: cache-first, TTL-based refresh via kron (Phase 2.2)
 - TF registry governance: kodex allowlist + kontext private registry URL
-- CLAUDE.md and ABOUTME.md reside at workspace root (not in repo)
+- CLAUDE.md + ABOUTME.md live at workspace root (not in repo)
 - claude.log lives in docs/ inside the repo
+- ABOUTME.md + CLAUDE.md generated and placed in workspace root
