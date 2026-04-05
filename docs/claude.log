@@ -9,14 +9,34 @@ Includes: commits made, files changed, design decisions, and running line counts
 
 | Metric | Count |
 |---|---|
-| Total sessions | 3 |
-| Total commits by Claude | 5 |
-| Total doc lines written by Claude | ~480 |
+| Total sessions | 4 |
+| Total commits by Claude | 6 |
+| Total doc lines written by Claude | ~540 |
 | Total code lines written by Claude | 0 |
 
 ---
 
-## Session — 2026-04-05
+## Session — 2026-04-05 (Part 2)
+
+### Context
+Continuation. Claude (cai, Sonnet) working with John M Jeyakumar.
+No code written — ADR correction, i2d2 reinstatement documented.
+
+### Commits
+
+**Commit 1:** `docs: supersede ADR-007, add ADR-008 — i2d2 reinstated as named engine inside kre8`
+- `docs/decisions/adr.md` — ADR-007 marked superseded, ADR-008 added (~40 lines)
+- `docs/claude.log` — updated
+- Lines added: ~60
+
+### Design Decisions Reached
+- i2d2 reinstated as the named reasoning engine inside the `kre8` component
+- ADR-007 superseded by ADR-008 with full rationale
+- New process rule added to ADR-008: CLAUDE.md and adr.md must never be out of sync — any decision change must update both in the same commit
+
+---
+
+## Session — 2026-04-05 (Part 1)
 
 ### Context
 Cleanup session. Claude Code (ccc/Cursor) working with John M Jeyakumar.
@@ -45,19 +65,14 @@ No new code written — dead file removal, broken import fix, root README rewrit
 - `kre8/intent.py` — broken import `from kre8_think.intent_models` → `from kre8.intent_models` (rename artifact)
 
 **Rewritten:**
-- `README.md` (root) — fully stale (referenced kre8-framework-demo, kre8_gate, kre8_think, kre8_agent, kre8_cli). Replaced with current product description, pipeline, and component table pointing to docs/
+- `README.md` (root) — fully stale. Replaced with current product description, pipeline, and component table.
 
-**Committed pre-existing unstaged doc folder deletions (John had deleted from disk in 2026-04-03 session but never staged):**
+**Committed pre-existing unstaged doc folder deletions:**
 - `docs/_decisions/`, `docs/_ideation/`, `docs/_schemas/`, `docs/_state/`, `docs/_work_log/`
 - `docs/arc/`, `docs/architecture/`, `docs/components/`, `docs/kiosk/`, `docs/laws/`, `docs/realms/`, `docs/whiteboard/`
 - `docs/docs_README.md`, `docs/.DS_Store`
 
 Lines changed: ~2600 removed, ~80 added (net -2520)
-
-### Design Decisions Reached
-- No new design decisions — cleanup only
-- All `kre8_*_README.md` files are confirmed dead artifacts from the kre8_think/kre8_agent/etc. rename
-- `gate/app.py` and `konnekt/agent.py` confirmed broken/dead post-rename; safe to remove
 
 ---
 
@@ -77,10 +92,6 @@ No code written — naming decisions, doc corrections, ADR additions.
 ### Design Decisions Reached
 - I2D2 label dropped entirely — `kre8` component IS the engine, no separate label needed
 - ADR-007 added to record this formally
-- CLAUDE.md updated (workspace root) — new workspace path, new repo name, new component names, I2D2 removed
-
-### Files Updated (workspace root, not repo)
-- `CLAUDE.md` — full rewrite to reflect klokwork-ws, klokworkai/kre8, k-naming, no I2D2
 
 ---
 
@@ -112,7 +123,6 @@ kre8_whiteboard → konsole
 - Transferred: `kre8framework/kre8-framework-demo` → `klokworkai/kre8`
 - New workspace: `/Users/johnman/Documents/klokwork-ws/`
 - Fresh clone of `klokworkai/kre8` into new workspace
-- `_misc/` cleaned — deleted: `gemini_handoff.md`, `kre8_claude_handoff.md`, `track_1_mvp.md`, `cursor_notes.txt`
 
 ---
 
@@ -132,40 +142,16 @@ No code written — all design, naming, and repo housekeeping.
 - `docs/claude.log` — new, ~60 lines
 - **Total lines added this commit: ~440**
 
-### Files Deleted (by John, manually before commit)
-```
-docs/_ideation/           (entire folder)
-docs/_state/              (entire folder)
-docs/_work_log/           (entire folder)
-docs/arc/                 (entire folder)
-docs/kiosk/               (entire folder)
-docs/laws/                (entire folder)
-docs/realms/              (entire folder)
-docs/whiteboard/          (entire folder)
-docs/components/          (entire folder)
-docs/architecture/        (entire folder)
-docs/_decisions/          (entire folder)
-docs/_schemas/            (entire folder)
-docs/docs_README.md
-docs/.DS_Store
-kre8_think/kre8_think_README.md
-kre8_agent/kre8_agent_README.md
-```
-
 ### Design Decisions Reached
 - Company: klökwork Inc / klökwork AI
 - Product: kre8 by klökwork AI
 - GitHub org: klokworkai, mono-repo: klokworkai/kre8
-- Full component renaming locked (kre8_think→kre8, kre8_agent→konnekt, etc.)
+- Full component renaming locked
 - Component phasing: Phase 1 Pilot, Phase 2.1, Phase 2.2, Phase 3
-- DesignPlan renamed to Kanvas (schema level only)
+- DesignPlan renamed to Kanvas
 - StructuredIntent (SI) name retained
-- kure absorbs kcheck — validate + self-correct is sub-module of koder
+- kure absorbs kcheck
 - skout = semantic search engine (katalog + kpedia)
 - kpedia: three collections — pillars, forums, utd_docs
-- koder owns Context7 integration (write-through cache → kpedia/utd_docs)
-- Cache strategy: cache-first, TTL-based refresh via kron (Phase 2.2)
-- TF registry governance: kodex allowlist + kontext private registry URL
+- koder owns Context7 integration
 - CLAUDE.md + ABOUTME.md live at workspace root (not in repo)
-- claude.log lives in docs/ inside the repo
-- ABOUTME.md + CLAUDE.md generated and placed in workspace root

@@ -88,10 +88,33 @@ Format: Context → Options Considered → Decision → Rationale.
 
 ---
 
-## ADR-007 — kre8 is the Engine (not I2D2)
+## ADR-007 — kre8 is the Engine (SUPERSEDED by ADR-008)
 
-**Context:** The orchestration engine was previously referred to as "I2D2" (Intelligent Infrastructure Design Decision). This created a naming split between the component (`kre8`) and its internal logic label (`I2D2`).
+~~**Decision:** Drop the I2D2 label entirely. The `kre8` component *is* the engine.~~
 
-**Decision:** Drop the I2D2 label entirely. The `kre8` component *is* the engine. No separate naming for the orchestration logic.
+**Status: Superseded by ADR-008.** This decision was reversed. See ADR-008 for current state and rationale.
 
-**Rationale:** One name, one concept. kre8 owns the full pipeline from NLP → SI → Kanvas. I2D2 was an internal label that added unnecessary indirection. The pipeline is now simply referred to as "the kre8 pipeline."
+---
+
+## ADR-008 — i2d2 Reinstated as Named Engine Inside kre8
+
+**Context:** ADR-007 dropped the i2d2 label, treating `kre8` as both the component name and the engine name. After further review, this conflated two distinct concepts: the TPL framework (kre8) and its internal reasoning engine (i2d2).
+
+**Options:**
+- Keep ADR-007: `kre8` component = engine, no separate i2d2 label
+- Reinstate i2d2 as the named reasoning engine inside the `kre8` component
+
+**Decision:** i2d2 (Intelligent Infrastructure Design Decision) is reinstated as the named reasoning engine that powers the `kre8` component. `i2d2.py` is the orchestration entry point inside `kre8/`.
+
+**The distinction:**
+- **kre8** is the TPL framework product — the umbrella platform and the `kre8/` component within it
+- **i2d2** is the reasoning engine *inside* the `kre8` component — the mechanism that transforms StructuredIntent into a validated Kanvas
+- kre8 (framework) is powered by kre8 (component), which is powered by i2d2 (engine)
+
+**Rationale:**
+- Conceptual clarity: the reasoning engine deserves its own identity separate from the component and framework names
+- Branding: i2d2 as a named engine strengthens the product narrative — "kre8 is a Thinking Platform Layer, powered by the i2d2 engine"
+- Naming collision: without i2d2, the word "kre8" carries three meanings simultaneously (framework, component, engine). Named separation eliminates this ambiguity.
+- The README clearly states: "At its core is i2d2 — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions"
+
+**Rule going forward:** Any change to a decision already captured in an ADR must supersede or amend that ADR in the same commit as the CLAUDE.md update. ADRs and CLAUDE.md must never be out of sync.
