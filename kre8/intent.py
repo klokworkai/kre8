@@ -1,4 +1,4 @@
-from kre8_think.intent_models import StructuredIntent
+from kre8.intent_models import StructuredIntent
 
 
 def extract_intent(raw_input: str, agent) -> StructuredIntent:

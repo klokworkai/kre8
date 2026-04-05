@@ -9,10 +9,55 @@ Includes: commits made, files changed, design decisions, and running line counts
 
 | Metric | Count |
 |---|---|
-| Total sessions | 2 |
-| Total commits by Claude | 4 |
-| Total doc lines written by Claude | ~430 |
+| Total sessions | 3 |
+| Total commits by Claude | 5 |
+| Total doc lines written by Claude | ~480 |
 | Total code lines written by Claude | 0 |
+
+---
+
+## Session — 2026-04-05
+
+### Context
+Cleanup session. Claude Code (ccc/Cursor) working with John M Jeyakumar.
+No new code written — dead file removal, broken import fix, root README rewrite.
+
+### Commits
+
+**Commit 1:** `chore: remove stale pre-rename READMEs, dead code; fix broken import; rewrite root README`
+
+**Deleted — stale pre-rename READMEs (9 files):**
+- `katalog/kre8_arc_README.md`
+- `kiosk/kre8_kiosk_README.md`
+- `kodex/kre8_laws_README.md`
+- `konnekt/kre8_agent_README.md`
+- `konsole/kre8_whiteboard_README.md`
+- `kontext/kre8_realm_README.md`
+- `kre8/kre8_think_README.md`
+- `gate/README.md` (referenced "kre8-gate" / "kre8-think")
+- `kli/README.md` (referenced "kre8-gate")
+
+**Deleted — dead code (2 files):**
+- `gate/app.py` — broken imports to `kre8_agent.agent` and `kre8_think.i2d2` (non-existent modules post-rename); gate is Phase 2.1/parked
+- `konnekt/agent.py` — `Kre8Agent` class with old Bedrock stub; wrong component purpose (konnekt = LiteLLM); sole consumer was `gate/app.py`
+
+**Fixed:**
+- `kre8/intent.py` — broken import `from kre8_think.intent_models` → `from kre8.intent_models` (rename artifact)
+
+**Rewritten:**
+- `README.md` (root) — fully stale (referenced kre8-framework-demo, kre8_gate, kre8_think, kre8_agent, kre8_cli). Replaced with current product description, pipeline, and component table pointing to docs/
+
+**Committed pre-existing unstaged doc folder deletions (John had deleted from disk in 2026-04-03 session but never staged):**
+- `docs/_decisions/`, `docs/_ideation/`, `docs/_schemas/`, `docs/_state/`, `docs/_work_log/`
+- `docs/arc/`, `docs/architecture/`, `docs/components/`, `docs/kiosk/`, `docs/laws/`, `docs/realms/`, `docs/whiteboard/`
+- `docs/docs_README.md`, `docs/.DS_Store`
+
+Lines changed: ~2600 removed, ~80 added (net -2520)
+
+### Design Decisions Reached
+- No new design decisions — cleanup only
+- All `kre8_*_README.md` files are confirmed dead artifacts from the kre8_think/kre8_agent/etc. rename
+- `gate/app.py` and `konnekt/agent.py` confirmed broken/dead post-rename; safe to remove
 
 ---
 
