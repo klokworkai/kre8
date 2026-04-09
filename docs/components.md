@@ -9,7 +9,7 @@
 
 | Component | Folder | Role | Tech |
 |---|---|---|---|
-| **kre8** | `kre8/` | Brain — I2D2 orchestrator, NLP→SI→Kanvas reasoning | Python, Pydantic |
+| **kre8** | `kre8/` | Brain — i2d2 orchestrator, NLP→SI→Kanvas reasoning | Python, Pydantic |
 | **konnekt** | `konnekt/` | Master LLM adapter/agent router | LiteLLM |
 | **koder** | `koder/` | HCL synthesis engine | DeepSeek-V3, Context7 |
 | **kure** | `koder/kure/` | Validate + self-correct loop (sub-module of koder) | Checkov, OpenTofu |
@@ -35,7 +35,7 @@
 
 | Component | Folder | Role | Tech |
 |---|---|---|---|
-| **skout** | `skout/` | Semantic search — katalog + kpedia | pgvector |
+| **skout** | `skout/` | Semantic search + re-ranking (Cohere or Groq, TBD) — katalog + kpedia | pgvector |
 | **katalog** | `katalog/` | Architecture pattern catalog — stores successful Kanvas | Postgres |
 | **kpedia** | `kpedia/` | RAG knowledge base (pillars, forums, utd_docs) | pgvector, Crawl4AI |
 | **komb** | `komb/` | Web scraper — feeds kpedia/pillars and kpedia/forums | Crawl4AI |
@@ -114,7 +114,7 @@ klokworkai/kre8
 ├── konsole/        ← admin UI
 ├── gate/           ← ingress (Phase 2.1)
 ├── katalog/        ← arch catalog (Phase 2.1)
-├── skout/          ← search (Phase 2.1)
+├── skout/          ← search + rerank (Phase 2.1)
 ├── kpedia/         ← knowledge base (Phase 2.1)
 ├── komb/           ← scraper (Phase 2.1)
 └── docs/
