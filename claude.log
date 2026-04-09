@@ -1,7 +1,8 @@
-# claude.log — kre8 Session History
-
-This file tracks what Claude has done in each working session.
-Includes: commits made, files changed, design decisions, and running line counts.
+# claude.log — kre8
+# Append format (ccc writes at each commit — one entry per implement session):
+# DATE | COMMIT MSG | FILES CHANGED | LINES ADDED | LINES REMOVED
+# Example:
+# 2026-04-09 | feat: full SI Pydantic schema | kre8/intent_models.py | +120 | -5
 
 ---
 
