@@ -1,8 +1,9 @@
 # claude.log — kre8
-# Append format (ccc writes at each commit — one entry per implement session):
-# DATE | COMMIT MSG | FILES CHANGED | LINES ADDED | LINES REMOVED
-# Example:
-# 2026-04-09 | feat: full SI Pydantic schema | kre8/intent_models.py | +120 | -5
+# Written by Claude Code in Cursor (ccc) — one entry per commit.
+# FORMAT: DATE | COMMIT MSG | FILES CHANGED | LINES ADDED | LINES REMOVED
+# Multiple files: comma-separated in FILES CHANGED column.
+# Example: 2026-04-09 | feat: full SI Pydantic schema | kre8/intent_models.py | +120 | -5
+# After every commit, update Cumulative Stats below.
 
 ---
 
@@ -14,17 +15,6 @@
 | Total commits by Claude | 6 |
 | Total doc lines written by Claude | ~540 |
 | Total code lines written by Claude | 0 |
-
----
-
-## John + Claude hrs
-
-| Month | Hours |
-|---|---|
-| March 2026 | 16 |
-| April 2026 | 24 |
-
-**Cumulative Total: 40 hrs**
 
 ---
 
@@ -51,7 +41,7 @@ No code written — ADR correction, i2d2 reinstatement documented.
 ## Session — 2026-04-05 (Part 1)
 
 ### Context
-Cleanup session. Claude Code (ccc/Cursor) working with John M Jeyakumar.
+Cleanup session. Claude Code in Cursor (ccc) working with John M Jeyakumar.
 No new code written — dead file removal, broken import fix, root README rewrite.
 
 ### Commits
@@ -91,7 +81,7 @@ Lines changed: ~2600 removed, ~80 added (net -2520)
 ## Session — 2026-04-04 (Part 2)
 
 ### Context
-Continuation. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+Continuation. Claude (cai, Sonnet) working with John M Jeyakumar.
 No code written — naming decisions, doc corrections, ADR additions.
 
 ### Commits
@@ -110,7 +100,7 @@ No code written — naming decisions, doc corrections, ADR additions.
 ## Session — 2026-04-04 (Part 1)
 
 ### Context
-Continuation of onboarding. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+Continuation of onboarding. Claude (cai, Sonnet) working with John M Jeyakumar.
 No code written — repo transfer, housekeeping, folder renames.
 
 ### Commits
@@ -141,7 +131,7 @@ kre8_whiteboard → konsole
 ## Session — 2026-04-03
 
 ### Context
-Onboarding session. Claude (claude.ai, Sonnet) working with John M Jeyakumar.
+Onboarding session. Claude (cai, Sonnet) working with John M Jeyakumar.
 No code written — all design, naming, and repo housekeeping.
 
 ### Commits
