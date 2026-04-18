@@ -1,8 +1,13 @@
+# kre8 — Intent to Infra
+
+![kre8 Logo](./kre8-logo.png)
+
+---
 # kre8 by klökwork AI
 
 **kre8** is a **Thinking Platform Layer (TPL)** — a platform that thinks, designs, and builds cloud infrastructure from natural language intent.
 
-At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions before any HCL is generated.
+At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions before any HCL is generated and emboies true **Intent to Infra**.
 
 ---
 
