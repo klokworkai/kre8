@@ -5,7 +5,7 @@
 ---
 # kre8 by klökwork AI
 
-**kre8** is a **Thinking Platform Layer (TPL)** — a platform that thinks, designs, and builds cloud infrastructure from natural language intent.
+**kre8** is a **Thinking Infra Engine (TIE)** — context-aware, thinks, designs, and builds cloud infrastructure from natural language intent.
 
 At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions before any HCL is generated and emboies true **Intent to Infra**.
 
@@ -18,6 +18,7 @@ NLP Input
   → kre8  (intent extraction → StructuredIntent)
   → konform  (SI validated against kodex policies)
   → skout  (semantic search: katalog + kpedia)
+  → kloud-skan  (reads current infra state)
   → kre8  (Kanvas design reasoning)
   → konform  (Kanvas validated against kodex)
   → koder  (HCL synthesis via Context7)
