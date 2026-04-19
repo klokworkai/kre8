@@ -5,13 +5,6 @@ from .kit_schema import Kit
 from .extract_kit import extract_kit
 
 
-def load_config():
-    base_dir = os.path.dirname(__file__)
-    config_path = os.path.join(base_dir, "config.yaml")
-    with open(config_path, "r") as f:
-        return yaml.safe_load(f)
-
-
 def process_intent(raw_input: str, konnekt):
     """
     Main i2d2 orchestration entry point.
