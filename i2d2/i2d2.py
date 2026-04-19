@@ -1,8 +1,8 @@
 import os
 import yaml
 
-from .models import Plan
-from .intent import extract_intent
+from .kit_schema import Kit
+from .extract_kit import extract_kit
 
 
 def load_config():
@@ -12,42 +12,23 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def validate_plan(plan: Plan, config: dict):
-    if plan.workload_type not in config["workloads"]["allowed"]:
-        raise ValueError("Workload not allowed")
-
-    if plan.estimated_monthly_cost > config["constraints"]["max_budget_usd"]:
-        raise ValueError("Budget exceeded")
-
-    return True
-
-
-def process_intent(raw_input: str, agent):
+def process_intent(raw_input: str, konnekt):
     """
-    Main I2D2 orchestration entry point.
+    Main i2d2 orchestration entry point.
 
     Flow:
         raw input
         ↓
-        intent extraction
+        Kit extraction
         ↓
-        (future) design reasoning
+        (future) design reasoning → Kanvas
         ↓
-        plan validation
+        Gate 1 + Gate 2 (konform)
     """
 
-    # Step 1 — extract structured intent
-    # (for now we reuse the existing stub agent call)
-    intent = extract_intent(raw_input, agent)
+    # Step 1 — extract Kit from raw NLP input
+    kit = extract_kit(raw_input, konnekt)
 
-    # Step 2 — placeholder design logic
-    # (for now we reuse the existing stub agent call)
-    plan_data = agent.call_llm(intent.goal)
+    # TODO: konform gate goes here
 
-    plan = Plan(**plan_data)
-
-    # Step 3 — validate against platform config
-    config = load_config()
-    validate_plan(plan, config)
-
-    return plan
+    return kit

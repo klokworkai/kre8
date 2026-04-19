@@ -11,10 +11,40 @@
 
 | Metric | Count |
 |---|---|
-| Total sessions | 4 |
-| Total commits by Claude | 6 |
-| Total doc lines written by Claude | ~540 |
-| Total code lines written by Claude | 0 |
+| Total sessions | 5 |
+| Total commits by Claude | 7 |
+| Total doc lines written by Claude | ~593 |
+| Total code lines written by Claude | ~200 |
+
+---
+
+## Session — 2026-04-19
+
+### Context
+CC implementation session. Claude Code (cc, Sonnet 4.6) working with John M Jeyakumar.
+Three CC-TODO tasks completed: i2d2 cleanup/rename, Kit schema, extract_kit stub. Stub tests written.
+
+### Commits
+
+**Commit 1:** `feat: i2d2 cleanup, Kit schema, extract_kit stub, stub tests`
+
+**Deleted:**
+- `i2d2/models.py` — pre-Kanvas `Plan` model, no longer relevant
+- `i2d2/intent_models.py` — renamed to `kit_schema.py`
+- `i2d2/intent.py` — renamed to `extract_kit.py`
+
+**Modified:**
+- `i2d2/i2d2.py` — imports updated to `kit_schema`/`extract_kit`, `validate_plan` removed, `# TODO: konform gate goes here` added
+- `requirements.txt` — added `pytest`
+
+**Added:**
+- `i2d2/kit_schema.py` — full Pydantic v2 Kit schema: KitSignal, SizeSignal, NfrSignal, TemporalSignal, ExclusionSignal, IntentType enum, Kit model (74 lines)
+- `i2d2/extract_kit.py` — extract_kit stub: konnekt=None returns hardcoded Kit, live path calls konnekt.complete + model_validate (32 lines)
+- `i2d2/prompts/extract_kit.txt` — prompt stub placeholder (15 lines)
+- `stub_tests/test_kit_schema.py` — 11 stub tests: signal models, IntentType, Kit instantiation/validation, extract_kit stub path (94 lines)
+- `stub_tests/test_instructions.md` — minimal test run instructions (38 lines)
+
+Lines added: ~266 | Lines removed: ~101
 
 ---
 

@@ -1,0 +1,15 @@
+# STUB — prompt engineering is a separate task
+# Replace this entire file when Kit extraction prompt is designed.
+#
+# Expected input variable: {{raw_input}}
+# Expected output: JSON object matching the Kit schema (kit_schema.py)
+# Key constraints:
+#   - Extract signal values verbatim — no normalization
+#   - inferred: true only when the signal was not explicitly stated
+#   - source_span: the exact substring from raw_input that produced the signal, or null
+#   - intent: one of PROVISION | MODIFY | DESTROY | QUERY
+
+Extract structured infrastructure intent from the following user input and return a valid Kit JSON object.
+
+User input:
+{{raw_input}}

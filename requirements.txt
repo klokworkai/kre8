@@ -4,3 +4,4 @@ pydantic
 pyyaml
 requests
 jinja2
+pytest
