@@ -15,8 +15,8 @@ At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the rea
 
 ```
 NLP Input
-  → kre8  (intent extraction → StructuredIntent)
-  → konform  (SI validated against kodex policies)
+  → kre8  (intent extraction → kit)
+  → konform  (kit validated against kodex policies)
   → skout  (semantic search: katalog + kpedia)
   → kloud-skan  (reads current infra state)
   → kre8  (Kanvas design reasoning)
