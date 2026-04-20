@@ -9,9 +9,9 @@
 
 | Component | Folder | Role | Tech |
 |---|---|---|---|
-| **kre8** | `kre8/` | Brain — i2d2 orchestrator, NLP→SI→Kanvas reasoning | Python, Pydantic |
+| **i2d2** | `i2d2/` | Brain — i2d2 orchestrator, NLP→Kit→Kanvas reasoning | Python, Pydantic |
 | **konnekt** | `konnekt/` | Master LLM adapter/agent router | LiteLLM |
-| **koder** | `koder/` | HCL synthesis engine | DeepSeek-V3, Context7 |
+| **koder** | `koder/` | HCL synthesis engine | DeepSeek-V3, Context7, utd-docs |
 | **kure** | `koder/kure/` | Validate + self-correct loop (sub-module of koder) | Checkov, OpenTofu |
 | **konform** | `konform/` | OPA policy engine wrapper | OPA |
 | **kodex** | `kodex/` | Rego policy definitions (LADE model) | OPA Rego |
@@ -58,6 +58,7 @@
 | **kron** | `kron/` | Scheduler — komb scrapes, cache TTL refresh | APScheduler |
 | **kast** | `kast/` | Slack/webhook notifier for pipeline events | Webhooks |
 | **kick** | `kick/` | Bootstrap/init — workspace and realm setup | Python |
+| **skore** | `skore/` | Complexity score logic for Kit, determines Sonnet or Opus call | Python |
 
 ---
 
@@ -85,6 +86,7 @@
 | `kruise` | No definition yet |
 | `krank` | No definition yet |
 | `klear` | Too close to klean — parked |
+| `kite` | lite SaaS version — parked |
 
 ---
 
