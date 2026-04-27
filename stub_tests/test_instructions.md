@@ -28,7 +28,7 @@ pytest stub_tests/test_kit_schema.py -v
 |------|-------|
 | `test_kit_schema.py` | Kit schema models, IntentType enum, `extract_kit` stub path (konnekt=None) |
 | `test_konnekt.py` | — pending konnekt implementation |
-| `test_kanvas_schema.py` | — pending Kanvas schema implementation |
+| `test_kanvas_schema.py` | GateVerdict, KruxResource, Krux (instantiation + all validators), Kanvas |
 | `test_pipeline.py` | — pending full pipeline stub |
 
 ## Adding tests

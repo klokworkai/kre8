@@ -1,7 +1,7 @@
 import json
 import os
 
-from .kit_schema import Kit, KitSignal, IntentType
+from .schemas import Kit, KitSignal, IntentType
 
 
 def extract_kit(raw_input: str, konnekt) -> Kit:

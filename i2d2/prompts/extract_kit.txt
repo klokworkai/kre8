@@ -2,7 +2,7 @@
 # Replace this entire file when Kit extraction prompt is designed.
 #
 # Expected input variable: {{raw_input}}
-# Expected output: JSON object matching the Kit schema (kit_schema.py)
+# Expected output: JSON object matching the Kit schema (schemas.py)
 # Key constraints:
 #   - Extract signal values verbatim — no normalization
 #   - inferred: true only when the signal was not explicitly stated

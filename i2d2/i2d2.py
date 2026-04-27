@@ -1,7 +1,7 @@
 import os
 import yaml
 
-from .kit_schema import Kit
+from .schemas import Kit
 from .extract_kit import extract_kit
 
 

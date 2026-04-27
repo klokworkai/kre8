@@ -11,10 +11,40 @@
 
 | Metric | Count |
 |---|---|
-| Total sessions | 5 |
-| Total commits by Claude | 7 |
+| Total sessions | 6 |
+| Total commits by Claude | 8 |
 | Total doc lines written by Claude | ~593 |
-| Total code lines written by Claude | ~200 |
+| Total code lines written by Claude | ~390 |
+
+---
+
+## Session — 2026-04-27
+
+### Context
+CC implementation session. Claude Code (cc, Sonnet 4.6) working with John M Jeyakumar.
+One CC-TODO task: rename kit_schema.py → schemas.py, add Krux + Kanvas Pydantic models.
+
+### Commits
+
+**Commit 1:** `feat: rename kit_schema → schemas, add Krux + Kanvas models, config.yaml`
+
+**Deleted:**
+- `i2d2/kit_schema.py` — renamed to `i2d2/schemas.py`
+
+**Added:**
+- `i2d2/schemas.py` — full schemas file: all existing Kit models + Kit.kraken field + DependsOnEntry, KruxInput, KruxOutput, KruxResource, Krux (with 7 model validators: no dup ids, valid layers, type format, ref resolution, foundation-layer deps, role/type consistency, DAG acyclic, required inputs referenced), GateVerdict (pass_ alias), DesignConflicts, Kanvas (~190 lines)
+- `i2d2/config.yaml` — default_region: "us-east-1" (2 lines)
+- `stub_tests/test_kanvas_schema.py` — 23 tests: GateVerdict (alias + python-name + serialization), KruxResource defaults, Krux instantiation + all validators, Kanvas instantiation + model_validate (~190 lines)
+
+**Modified:**
+- `i2d2/extract_kit.py` — import kit_schema → schemas
+- `i2d2/i2d2.py` — import kit_schema → schemas
+- `stub_tests/test_kit_schema.py` — import kit_schema → schemas
+- `i2d2/prompts/extract_kit.txt` — comment updated
+- `stub_tests/test_instructions.md` — test_kanvas_schema.py row updated
+- `claude.log` — this entry
+
+Lines added: ~190 (schemas.py new models) + ~190 (tests) + ~2 (config.yaml) = ~382 | Lines removed: ~0 net (kit_schema.py content moved to schemas.py)
 
 ---
 

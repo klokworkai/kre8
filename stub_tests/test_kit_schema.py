@@ -1,4 +1,4 @@
-from i2d2.kit_schema import (
+from i2d2.schemas import (
     ExclusionSignal,
     IntentType,
     Kit,
