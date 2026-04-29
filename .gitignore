@@ -17,3 +17,7 @@ venv/
 
 # logs
 *.log
+!claude.log
+
+# secrets
+.env

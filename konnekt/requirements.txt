@@ -1,0 +1,4 @@
+litellm
+google-cloud-secret-manager
+python-dotenv
+pydantic>=2.0

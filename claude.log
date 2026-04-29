@@ -11,10 +11,39 @@
 
 | Metric | Count |
 |---|---|
-| Total sessions | 6 |
-| Total commits by Claude | 8 |
+| Total sessions | 7 |
+| Total commits by Claude | 9 |
 | Total doc lines written by Claude | ~593 |
-| Total code lines written by Claude | ~390 |
+| Total code lines written by Claude | ~636 |
+
+---
+
+## Session — 2026-04-29
+
+### Context
+CC implementation session. Claude Code (cc, Sonnet 4.6) working with John M Jeyakumar.
+One CC-TODO task: build full konnekt LLM adapter from scratch.
+
+### Commits
+
+**Commit 1:** `feat: implement konnekt LLM adapter — errors, config, models, secrets, complete, tests`
+
+**Created:**
+- `konnekt/errors.py` — KonnektError(Exception) with provider/model/task/message fields, __str__ format (7 lines)
+- `konnekt/config.py` — KonnektConfig Pydantic v2 model, defaults: temperature=0.2, max_tokens=2000, timeout=30 (7 lines)
+- `konnekt/models.py` — MODELS role→model dict, PROVIDER_PREFIXES model→LiteLLM-prefixed dict, resolve_model() raises KonnektError on unknown (27 lines)
+- `konnekt/secrets.py` — module-level _secret_cache, get_secret() with GCP SM→.env fallback, PROVIDER_SECRET_MAP, get_api_key() (59 lines)
+- `konnekt/konnekt.py` — complete() function with resolve→provider→api_key→litellm.completion chain, logging, KonnektError wrapping (35 lines)
+- `konnekt/requirements.txt` — litellm, google-cloud-secret-manager, python-dotenv, pydantic>=2.0 (4 lines)
+- `.env.example` — all 6 env vars with named placeholders, no values (9 lines)
+
+**Modified:**
+- `konnekt/__init__.py` — exports complete, KonnektConfig, KonnektError, MODELS (6 lines, was empty)
+- `stub_tests/test_konnekt.py` — 8 tests: resolve_model valid+unknown, KonnektConfig defaults+override, KonnektError str+fields, get_secret cache hit (GCP never reached), get_secret not found raises (92 lines, was empty)
+- `.gitignore` — added !claude.log exception and .env entry (+3 lines)
+- `claude.log` — this entry
+
+Lines added: ~246 code + ~3 gitignore = ~249 | Lines removed: 0
 
 ---
 
