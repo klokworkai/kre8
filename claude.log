@@ -12,9 +12,32 @@
 | Metric | Count |
 |---|---|
 | Total sessions | 7 |
-| Total commits by Claude | 9 |
+| Total commits by Claude | 10 |
 | Total doc lines written by Claude | ~593 |
-| Total code lines written by Claude | ~636 |
+| Total code lines written by Claude | ~853 |
+
+---
+
+## Session — 2026-04-29 (Part 2)
+
+### Context
+CC implementation session. Claude Code (cc, Sonnet 4.6) working with John M Jeyakumar.
+Rework of konnekt: WIF-only auth (no .env API keys, no gcloud local login), 5-family model registry with tier selection, model_select override on complete().
+
+### Commits
+
+**Commit 1:** `feat: konnekt — WIF auth, 5-family model registry, model_select override`
+
+**Modified:**
+- `konnekt/models.py` — replaced MODELS+PROVIDER_PREFIXES with MODEL_REGISTRY (5 families × 2 tiers: openai, gemini, anthropic, deepseek, groq) and ROLE_DEFAULTS; resolve_model() now takes (role, model_select) and returns (provider, litellm_model_string) (+67/-27 lines)
+- `konnekt/secrets.py` — removed GOOGLE_APPLICATION_CREDENTIALS guard and .env API key fallback; PROVIDER_SECRET_MAP updated to kre8-konnekt-dev-{provider} secret names; ADC-only auth (+10/-20 lines)
+- `konnekt/konnekt.py` — complete() signature: model→role, added model_select param; logging updated (+5/-5 lines)
+- `konnekt/__init__.py` — exports MODELS→MODEL_REGISTRY+ROLE_DEFAULTS (+2/-2 lines)
+- `.env.example` — removed all API keys and GOOGLE_APPLICATION_CREDENTIALS; GCP_PROJECT_ID only (+7/-4 lines)
+- `stub_tests/test_konnekt.py` — 18 tests: role defaults (×4), model_select overrides (×5), error cases (×3), registry structure (×2), config, error format, secret cache (×2) (+100/-50 lines)
+- `i2d2/extract_kit.py` — updated stale konnekt.complete() stub call to new role-based signature
+
+Lines added: ~217 | Lines removed: ~117
 
 ---
 

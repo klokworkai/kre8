@@ -18,11 +18,12 @@ def extract_kit(raw_input: str, konnekt) -> Kit:
 
     prompt = prompt_template.replace("{{raw_input}}", raw_input)
 
+    from konnekt.config import KonnektConfig
     response = konnekt.complete(
-        provider="openai",
-        model="gpt-4o-mini",
+        role="extractor",
+        task="extract",
         prompt=prompt,
-        config={},
+        config=KonnektConfig(),
     )
 
     try:

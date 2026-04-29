@@ -10,18 +10,26 @@ from konnekt.secrets import get_api_key
 logger = logging.getLogger(__name__)
 
 
-def complete(model: str, task: str, prompt: str, config: KonnektConfig) -> str:
-    resolved_model = None
+def complete(
+    role: str,
+    task: str,
+    prompt: str,
+    config: KonnektConfig,
+    model_select: tuple[int, int] | None = None,
+) -> str:
     provider = "unknown"
+    litellm_model = "unknown"
     try:
-        resolved_model = resolve_model(model)
-        provider = resolved_model.split("/")[0]
+        provider, litellm_model = resolve_model(role, model_select)
         api_key = get_api_key(provider)
 
-        logger.info("konnekt call | task=%s model=%s resolved=%s", task, model, resolved_model)
+        logger.info(
+            "konnekt | role=%s task=%s model=%s select=%s",
+            role, task, litellm_model, model_select,
+        )
 
         response = litellm.completion(
-            model=resolved_model,
+            model=litellm_model,
             messages=[{"role": "user", "content": prompt}],
             temperature=config.temperature,
             max_tokens=config.max_tokens,
@@ -32,4 +40,4 @@ def complete(model: str, task: str, prompt: str, config: KonnektConfig) -> str:
     except KonnektError:
         raise
     except Exception as e:
-        raise KonnektError(provider=provider, model=model, task=task, message=str(e))
+        raise KonnektError(provider=provider, model=litellm_model, task=task, message=str(e))
