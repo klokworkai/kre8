@@ -12,9 +12,37 @@
 | Metric | Count |
 |---|---|
 | Total sessions | 7 |
-| Total commits by Claude | 10 |
+| Total commits by Claude | 11 |
 | Total doc lines written by Claude | ~593 |
-| Total code lines written by Claude | ~853 |
+| Total code lines written by Claude | ~1143 |
+
+---
+
+## Session — 2026-04-29 (Part 3)
+
+### Context
+CC implementation session. Claude Code (cc, Sonnet 4.6) working with John M Jeyakumar.
+MVP build-out: i2d2 FastAPI app, pyproject.toml for uv, mock integration tests, live integration tests for konnekt standalone and full i2d2→konnekt flow. Auth design covers local ADC, Docker/ECS (WIF credential config), GKE (Workload Identity), Cloud Run (attached SA).
+
+### Commits
+
+**Commit 1:** `feat: i2d2 FastAPI app, pyproject.toml, mock + live integration tests`
+
+**Created:**
+- `i2d2/app.py` — FastAPI: /health + POST /process; imports konnekt module, passes to process_intent (21 lines)
+- `pyproject.toml` — uv project config, all deps merged, pytest integration marker (22 lines)
+- `integration_tests/__init__.py` — empty
+- `integration_tests/conftest.py` — auto-skip if GCP_PROJECT_ID not set, integration marker (16 lines)
+- `integration_tests/test_konnekt_live.py` — 5 secret retrieval tests (per provider), cache tests, 4 role default LLM smoke tests, 5 model_select override tests (85 lines)
+- `integration_tests/test_i2d2_live.py` — health, Kit structure, 3 intent type tests, signal extraction, error handling (75 lines)
+
+**Modified:**
+- `stub_tests/test_konnekt_integration.py` — fixed google.cloud namespace package patching: patch("google.cloud.secretmanager...") → patch.object(google.cloud.secretmanager, ...) + explicit import
+- `.env.example` — full auth matrix: local ADC, Docker/ECS WIF config, GKE Workload Identity, Cloud Run attached SA
+
+All 61 stub tests passing. Live integration tests auto-skip without GCP_PROJECT_ID.
+
+Lines added: ~290 | Lines removed: ~5
 
 ---
 
