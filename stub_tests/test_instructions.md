@@ -1,16 +1,15 @@
 # stub_tests — Test Instructions
 
-Stub tests validate schemas and stub behaviour only. No LLM calls, no network, no external services.
+Stub tests validate schemas, logic, and wired call chains. No real LLM calls, no network, no external services.
 
 ## Setup
 
 ```bash
+cd kre8/
 pip install -r requirements.txt
 ```
 
 ## Run all stub tests
-
-From the `kre8/` root:
 
 ```bash
 pytest stub_tests/
@@ -19,7 +18,7 @@ pytest stub_tests/
 ## Run a single file
 
 ```bash
-pytest stub_tests/test_kit_schema.py -v
+pytest stub_tests/test_konnekt.py -v
 ```
 
 ## What's covered
@@ -27,12 +26,14 @@ pytest stub_tests/test_kit_schema.py -v
 | File | Tests |
 |------|-------|
 | `test_kit_schema.py` | Kit schema models, IntentType enum, `extract_kit` stub path (konnekt=None) |
-| `test_konnekt.py` | — pending konnekt implementation |
-| `test_kanvas_schema.py` | GateVerdict, KruxResource, Krux (instantiation + all validators), Kanvas |
+| `test_kanvas_schema.py` | GateVerdict, KruxResource, Krux (instantiation + all 7 validators), Kanvas |
+| `test_konnekt.py` | resolve_model role defaults + model_select overrides + error cases, KonnektConfig, KonnektError, secret cache |
+| `test_konnekt_integration.py` | Full chain mock: resolve_model → get_api_key → GCP SM (mocked) → litellm.completion (mocked) |
 | `test_pipeline.py` | — pending full pipeline stub |
 
 ## Adding tests
 
-- One file per component schema — match the component name
-- Stub tests only: instantiate models, validate field defaults, test `konnekt=None` paths
-- No mocking of LLM calls — test the stub return path directly
+- One file per component — match the component name
+- Stub tests only: schemas, logic, mock boundaries
+- No real network calls — mock at GCP SM and litellm boundaries
+- See `test_konnekt_integration.py` for the mock pattern

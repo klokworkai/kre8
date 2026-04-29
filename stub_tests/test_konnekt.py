@@ -39,13 +39,13 @@ def test_resolve_model_role_self_corrector():
 def test_resolve_model_select_gemini_flash():
     provider, model = resolve_model("architect", model_select=(2, 1))
     assert provider == "gemini"
-    assert model == "gemini/gemini-1.5-flash"
+    assert model == "gemini/gemini-flash-latest"
 
 
 def test_resolve_model_select_gemini_pro():
     provider, model = resolve_model("coder", model_select=(2, 2))
     assert provider == "gemini"
-    assert model == "gemini/gemini-1.5-pro"
+    assert model == "gemini/gemini-pro-latest"
 
 
 def test_resolve_model_select_claude_opus():

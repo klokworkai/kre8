@@ -103,7 +103,7 @@ def test_complete_model_select_gemini_flash(monkeypatch):
             )
 
     assert result == "PONG"
-    assert captured["model"] == "gemini/gemini-1.5-flash"
+    assert captured["model"] == "gemini/gemini-flash-latest"
 
 
 def test_complete_model_select_claude_opus(monkeypatch):

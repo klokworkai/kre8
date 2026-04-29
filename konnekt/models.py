@@ -12,8 +12,8 @@ MODEL_REGISTRY: dict[int, dict] = {
     2: {
         "provider": "gemini",
         "variants": {
-            1: "gemini-1.5-flash",
-            2: "gemini-1.5-pro",
+            1: "gemini-flash-latest",   # → gemini-3.1-flash-preview
+            2: "gemini-pro-latest",     # → gemini-3.1-pro-preview
         },
     },
     3: {

@@ -12,9 +12,32 @@
 | Metric | Count |
 |---|---|
 | Total sessions | 7 |
-| Total commits by Claude | 11 |
+| Total commits by Claude | 12 |
 | Total doc lines written by Claude | ~593 |
-| Total code lines written by Claude | ~1143 |
+| Total code lines written by Claude | ~1165 |
+
+---
+
+## Session — 2026-04-29 (Part 4)
+
+### Context
+Live integration test fixes: Gemini model strings, DeepSeek reasoning_content fallback, LiteLLM version pin.
+
+### Commits
+
+**Commit 1:** `fix: gemini model aliases, deepseek reasoning_content fallback, litellm>=1.35.0`
+
+**Modified:**
+- `konnekt/models.py` — Gemini variants: gemini-2.5-flash/pro → gemini-flash-latest / gemini-pro-latest (aliases resolving to gemini-3.1-flash/pro-preview on Google AI Studio)
+- `konnekt/konnekt.py` — reasoning_content fallback: if response.content is empty, fall back to message.reasoning_content (DeepSeek V4 thinking models return chain-of-thought there)
+- `konnekt/requirements.txt` — pinned litellm>=1.35.0 (required for DeepSeek V4 reasoning_content passthrough)
+- `stub_tests/test_konnekt.py` — updated gemini model assertions: gemini-1.5-* → gemini-flash/pro-latest
+- `stub_tests/test_konnekt_integration.py` — same assertion fix
+- `integration_tests/test_konnekt_live.py` — updated stale labels to match current model strings
+
+Result: 61/61 stub tests pass. 12/14 live tests pass. 2 Gemini live tests blocked by 429 (depleted Google AI Studio prepayment credits — not a code issue).
+
+Lines changed: ~20
 
 ---
 

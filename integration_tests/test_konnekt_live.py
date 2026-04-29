@@ -78,8 +78,8 @@ def test_complete_role_default(role, model_select, provider_label):
 # --- model_select override ---
 
 @pytest.mark.parametrize("role,model_select,label", [
-    ("extractor", (2, 1), "gemini-1.5-flash"),
-    ("extractor", (2, 2), "gemini-1.5-pro"),
+    ("extractor", (2, 1), "gemini-flash-latest"),
+    ("extractor", (2, 2), "gemini-pro-latest"),
     ("coder",     (3, 2), "claude-opus-4-6"),
     ("architect", (4, 2), "deepseek-v4-pro"),
     ("architect", (5, 2), "llama-3.3-70b-versatile"),

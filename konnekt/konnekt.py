@@ -36,7 +36,16 @@ def complete(
             timeout=config.timeout,
             api_key=api_key,
         )
-        return response.choices[0].message.content
+        message = response.choices[0].message
+        content = message.content
+        if not content:
+            # DeepSeek V4 thinking models return chain-of-thought in reasoning_content
+            # when content is empty. LiteLLM >=1.35.0 handles passthrough automatically
+            # but we still need to extract the field correctly.
+            content = getattr(message, "reasoning_content", None) or ""
+            if content:
+                logger.debug("konnekt | content empty, fell back to reasoning_content | model=%s", litellm_model)
+        return content
     except KonnektError:
         raise
     except Exception as e:
