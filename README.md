@@ -7,7 +7,7 @@
 
 **kre8** is a **Thinking Infra Engine (TIE)** — context-aware, thinks, designs, and builds cloud infrastructure from natural language intent.
 
-At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions before any HCL is generated and emboies true **Intent to Infra**.
+At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions before any HCL is generated and embodies true **Intent to Infra**.
 
 ---
 
