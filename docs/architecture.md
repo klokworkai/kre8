@@ -35,12 +35,12 @@ NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(
 | Stage | Component(s) | What happens |
 |---|---|---|
 | NLP → Kit | i2d2 + konnekt (Clerk) | Intent extracted into thin signal artifact. Values never normalized. |
-| Kit → kick | klue | kick (Kit Inferred Contextual Kodex) produced — applicable policy IDs resolved from kit + kontext. klue checks klues store in kodex before LLM inference. |
-| Kit + kick → kg1 | konform | Kit validated against kodex. Pipeline halts on failure (unless kraken=true). |
+| Kit → kick | klue | kick (Kit Inferred Contextual Klaws) produced — applicable policy IDs resolved from kit + kontext. klue checks klues store in klaws before LLM inference. |
+| Kit + kick → kg1 | konform | Kit validated against klaws. Pipeline halts on failure (unless kraken=true). |
 | kg1 → skout + skan | skout, skan | Semantic search over kpedia + cloud infra scan for design aid. skout produces skore. |
 | skore + skan findings → krux | i2d2 + konnekt (Architect) | Resource dependency graph generated. DAG + enum validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. |
 | krux → kanvas | knit + kwery | Provider konfig values resolved. Full infrastructure manifest assembled. |
-| kanvas → kg2 | konform | Kanvas validated against kodex. Violations recorded in design_conflicts[]. |
+| kanvas → kg2 | konform | Kanvas validated against klaws. Violations recorded in design_conflicts[]. |
 | kanvas → HCL | koder + konnekt (Coder) | HCL synthesized and written to katalog. |
 
 ---
@@ -50,8 +50,8 @@ NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(
 | Artifact | Description |
 |---|---|
 | **Kit** | Thin. Intent signals extracted as-is from NLP. No normalization. |
-| **kick** | Kit Inferred Contextual Kodex. Live per-run policy ID set produced by klue from kit + kontext. |
-| **klues** | The kick store inside kodex. Previously inferred kicks promoted for reuse. Not a pipeline artifact — owned by kodex, read by klue. |
+| **kick** | Kit Inferred Contextual Klaws. Live per-run policy ID set produced by klue from kit + kontext. |
+| **klues** | The kick store inside klaws. Previously inferred kicks promoted for reuse. Not a pipeline artifact — owned by klaws, read by klue. |
 | **krux** | Resource dependency graph — DAG of KruxResource nodes. |
 | **skore** | skout's re-ranked search results. Produced by skout, stored in kpedia, passed to i2d2 pre-Kanvas. |
 | **Kanvas** | Thick. Full infrastructure manifest — architecture decisions, resource map, konfig values, design conflicts. Single source of truth for koder. |
@@ -129,7 +129,7 @@ klokworkai/kre8          ← mono-repo
 ├── koder/               ← HCL synthesizer
 │   └── kure/            ← post-koder lint + self-correct (parked)
 ├── konform/             ← OPA policy engine wrapper
-├── kodex/               ← Rego policy definitions + klues store
+├── klaws/               ← Rego policy definitions + klues store
 │   └── policies/
 ├── kontext/             ← environment + workload context
 ├── kiosk/               ← developer UI

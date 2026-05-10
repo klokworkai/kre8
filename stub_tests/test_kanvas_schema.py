@@ -53,13 +53,13 @@ def _make_design_conflicts() -> DesignConflicts:
 def test_gate_verdict_via_alias():
     gv = GateVerdict(**{"pass": True})
     assert gv.pass_ is True
-    assert gv.violated_kodex_ids == []
+    assert gv.violated_klaws_ids == []
 
 
 def test_gate_verdict_via_python_name():
-    gv = GateVerdict(pass_=False, violated_kodex_ids=["KDX-001"])
+    gv = GateVerdict(pass_=False, violated_klaws_ids=["KLW-001"])
     assert gv.pass_ is False
-    assert gv.violated_kodex_ids == ["KDX-001"]
+    assert gv.violated_klaws_ids == ["KLW-001"]
 
 
 def test_gate_verdict_serializes_as_pass():
@@ -226,10 +226,10 @@ def test_kanvas_model_validate():
     data = {
         "krux": krux.model_dump(),
         "design_conflicts": {
-            "kg1": {"pass": True, "violated_kodex_ids": []},
-            "kg2": {"pass": False, "violated_kodex_ids": ["KDX-001"]},
+            "kg1": {"pass": True, "violated_klaws_ids": []},
+            "kg2": {"pass": False, "violated_klaws_ids": ["KLW-001"]},
         },
     }
     c = Kanvas.model_validate(data)
     assert c.design_conflicts.kg1.pass_ is True
-    assert c.design_conflicts.kg2.violated_kodex_ids == ["KDX-001"]
+    assert c.design_conflicts.kg2.violated_klaws_ids == ["KLW-001"]

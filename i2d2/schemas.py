@@ -225,7 +225,7 @@ class GateVerdict(BaseModel):
     model_config = {"populate_by_name": True}
 
     pass_: bool = Field(..., alias="pass")
-    violated_kodex_ids: list[str] = Field(default_factory=list)
+    violated_klaws_ids: list[str] = Field(default_factory=list)
 
 
 class DesignConflicts(BaseModel):

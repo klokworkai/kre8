@@ -13,19 +13,19 @@
 | kiosk | `kiosk/` | Developer UI | user NLP input | HCL display → UI | i2d2 | — | 1 | TODO |
 | koder | `koder/` | HCL synthesizer | kanvas | HCL → katalog | konnekt | i2d2 | 1 | TODO |
 | katalog | `katalog/` | Artifact store | any artifact | stored artifact → persistent store | — | i2d2, koder, skout | 1 (stub) → 2.1 (real) | TODO |
-| konform | `konform/` | Policy enforcement — OPA wrapper | artifact + kick_id | pass/fail + violated_kodex_ids → caller | kodex | i2d2 | 2.1 | TODO |
-| kodex | `kodex/` | Policy definitions + klues store | admin-defined policies | Rego policies → kodex store; klues store → klue | — | konform, klue, kwery | 2.1 | TODO |
+| konform | `konform/` | Policy enforcement — OPA wrapper | artifact + kick_id | pass/fail + violated_klaws_ids → caller | klaws | i2d2 | 2.1 | TODO |
+| klaws | `klaws/` | Policy definitions + klues store | admin-defined policies | Rego policies → klaws store; klues store → klue | — | konform, klue, kwery | 2.1 | TODO |
 | kontext | `kontext/` | Environment and workload context | admin config | context object → caller | — | i2d2, klue, kwery | 2.1 | TODO |
-| klue | `klue/` | Infers kick (Kit Inferred Contextual Kodex) from kit + kontext. Checks klues store before LLM inference. | kit + kontext | kick → katalog | kodex | i2d2 | 2.1 | TODO |
+| klue | `klue/` | Infers kick (Kit Inferred Contextual Klaws) from kit + kontext. Checks klues store before LLM inference. | kit + kontext | kick → katalog | klaws | i2d2 | 2.1 | TODO |
 | knit | `knit/` | Kanvas assembler — applies konfig onto krux | krux | kanvas → katalog | kwery | i2d2 | 2.1 | TODO |
-| kwery | `kwery/` | Provider value resolver — runtime konfig lookup | resource list | konfig values → knit | kontext, kodex | knit | 2.1 | TODO |
+| kwery | `kwery/` | Provider value resolver — runtime konfig lookup | resource list | konfig values → knit | kontext, klaws | knit | 2.1 | TODO |
 | skout | `skout/` | Semantic search + re-ranking over kpedia | kit_id + kick_id | skore → kpedia + i2d2 working memory | kpedia | i2d2 | 2.1 | TODO |
 | kpedia | `kpedia/` | RAG knowledge base — pillars, forums, utd_docs, skan(TBD) | query | relevant docs/patterns → skout | — | skout | 2.1 | TODO |
 | komb | `komb/` | Web scraper — feeds kpedia collections | URLs/sources | structured knowledge → kpedia | — | kron | 2.1 | TODO |
 | skan | `skan/` | Cloud infra scanner | cloud credentials | skan findings → TBD | cloud APIs | i2d2 | 2.1 | INPROGRESS |
 | kron | `kron/` | Scheduler | schedule config | triggered jobs → komb | komb | — | 2.2 | TODO |
 | kast | `kast/` | Slack/webhook notifier | events | notifications → external webhooks | external webhooks | i2d2 | 3 | TODO |
-| konsole | `konsole/` | Admin UI | admin input | config changes → kontext, kodex | kontext, kodex | — | 3 | TODO |
+| konsole | `konsole/` | Admin UI | admin input | config changes → kontext, klaws | kontext, klaws | — | 3 | TODO |
 | gate | `gate/` | API ingress | HTTP requests | routed requests → i2d2 | i2d2 | external clients | 3 | PARKED |
 | kli | `kli/` | CLI tool | CLI commands | CLI output → terminal | gate, i2d2 | — | 3 | PARKED |
 
@@ -43,9 +43,9 @@
 | skan findings | skan | i2d2 | TBD — possibly kpedia |
 | HCL | koder | — | katalog |
 
-> **klues** — the kick store inside kodex. A klue is a previously inferred kick (kit + kontext + resolved policy IDs) promoted into kodex for reuse. Not a pipeline artifact — owned by kodex, read by klue. See parked: klue learning loop.
+> **klues** — the kick store inside klaws. A klue is a previously inferred kick (kit + kontext + resolved policy IDs) promoted into klaws for reuse. Not a pipeline artifact — owned by klaws, read by klue. See parked: klue learning loop.
 
-> **kick** — Kit Inferred Contextual Kodex. The live per-run artifact produced by klue. Contains the set of applicable kodex policy IDs for this kit + kontext combination.
+> **kick** — Kit Inferred Contextual Klaws. The live per-run artifact produced by klue. Contains the set of applicable klaws policy IDs for this kit + kontext combination.
 
 ---
 
@@ -91,10 +91,10 @@ Model names in `konnekt/` only. Opus toggle logic in `i2d2/` only.
 | kontext compliance advisory | `kontext/` | User-facing — design when kiosk is built |
 | pause_for_review loop | `i2d2/` | i2d2 clarification questions via kiosk — rename TBD. ADR-002. |
 | exclusions/kontext overlap | `i2d2/` | Revisit post-MVP when kontext is designed |
-| kronicle | `kodex/` | Audit history registry under kodex — named, post-MVP |
+| kronicle | `klaws/` | Audit history registry under klaws — named, post-MVP |
 | kombine / konverge | — | Krux composition feature (was kraux). Name undecided, post-MVP |
 | $$$ mode / relaxed budget mode | `kiosk/` | May be UI framing on kraken. Mechanics TBD, post-MVP |
-| klue learning loop | `klue/` | Successful LLM-fallback kicks promoted into kodex.klues store — post-MVP |
+| klue learning loop | `klue/` | Successful LLM-fallback kicks promoted into klaws.klues store — post-MVP |
 | kraken mechanics | `i2d2/` | kraken_report, kill switches, drift handling — post-MVP |
 | composite / named sub-layers | `i2d2/` | app:app1 style — deferred post-MVP |
 | SecretsAdapter | `konnekt/` | Cloud-agnostic vault abstraction — post ship-ready |

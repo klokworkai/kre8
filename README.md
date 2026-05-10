@@ -16,11 +16,11 @@ At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the rea
 ```
 NLP Input
   → kre8  (intent extraction → kit)
-  → konform  (kit validated against kodex policies)
+  → konform  (kit validated against klaws policies)
   → skout  (semantic search: katalog + kpedia)
   → kloud-skan  (reads current infra state)
   → kre8  (Kanvas design reasoning)
-  → konform  (Kanvas validated against kodex)
+  → konform  (Kanvas validated against klaws)
   → koder  (HCL synthesis via Context7)
   → kure  (validate + self-correct)
   → kiosk  (HCL + Mermaid blueprint → developer)
@@ -39,10 +39,10 @@ See [docs/components.md](docs/components.md) for the full phased component regis
 | koder | `koder/` | 1 | HCL synthesis (DeepSeek-V3 + Context7) |
 | kure | `koder/kure/` | 1 | Validate + self-correct (Checkov + OpenTofu) |
 | konform | `konform/` | 1 | OPA policy engine wrapper |
-| kodex | `kodex/` | 1 | Rego policy definitions (LADE model) |
+| klaws | `klaws/` | 1 | Rego policy definitions (LADE model) |
 | kontext | `kontext/` | 1 | Environment/workload context |
 | kiosk | `kiosk/` | 1 | Developer UI — prompt in, HCL out |
-| konsole | `konsole/` | 1 | Admin UI — kontext, kodex, konnekt config |
+| konsole | `konsole/` | 1 | Admin UI — kontext, klaws, konnekt config |
 
 ---
 

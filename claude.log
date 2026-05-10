@@ -214,7 +214,7 @@ No new code written — dead file removal, broken import fix, root README rewrit
 **Deleted — stale pre-rename READMEs (9 files):**
 - `katalog/kre8_arc_README.md`
 - `kiosk/kre8_kiosk_README.md`
-- `kodex/kre8_laws_README.md`
+- `klaws/kre8_laws_README.md`
 - `konnekt/kre8_agent_README.md`
 - `konsole/kre8_whiteboard_README.md`
 - `kontext/kre8_realm_README.md`
@@ -275,7 +275,7 @@ kre8_agent      → konnekt
 kre8_arc        → katalog
 kre8_cli        → kli
 kre8_gate       → gate
-kre8_laws       → kodex
+kre8_laws       → klaws
 kre8_realm      → kontext
 kre8_kiosk      → kiosk
 kre8_whiteboard → konsole
@@ -319,4 +319,23 @@ No code written — all design, naming, and repo housekeeping.
 - skout = semantic search engine (katalog + kpedia)
 - kpedia: three collections — pillars, forums, utd_docs
 - koder owns Context7 integration
+
+---
+
+## Session — 2026-05-09
+
+### Context
+Pure rename: `kodex` → `klaws` across kre8 and klokwork-design-log/kre8. Reason: `kodex` too close to OpenAI Codex; `klaws` (k-laws) reflects the component's role as policy/rules authority. Policy ID prefix also renamed: `KDX-` → `KLW-`.
+
+### Commits
+
+**Commit 1:** `rename: kodex → klaws across all files (kre8 + design-log)`
+
+**Modified (kre8/):**
+- `README.md`, `claude.log`, `docs/architecture.md`, `docs/components.md`, `i2d2/schemas.py`, `stub_tests/test_kanvas_schema.py`
+
+**Modified (klokwork-design-log/kre8/):**
+- `CLAUDE.md`, `LATEST.md`, `adr.md`, `design.log`, `expansion.md`, `schemas.md`, `components/i2d2.md`, `components/kanvas.md`, `components/kanvas_schema_current_state.md`, `components/konform.md`, `briefs/kanvas_session_handoff_2026-04-21.md`, `briefs/kanvas_session_handoff_2026-04-23.md`, `briefs/kanvas_session_handoff_2026-04-24.md`, `briefs/opus_kanvas_design_brief.md`, `briefs/opus_kanvas_session_handoff`
+
+Lines changed: +203 / -203 (pure rename, net zero)
 - CLAUDE.md + ABOUTME.md live at workspace root (not in repo)
