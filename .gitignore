@@ -17,7 +17,9 @@ venv/
 
 # logs
 *.log
-!claude.log
 
 # secrets
 .env
+
+# session driver — local only, never commit
+CLAUDE.md

@@ -1,67 +1,66 @@
 # kre8 — Intent to Infra
 
-![kre8 Logo](./kre8-logo.png)
-
----
-# kre8 by klökwork AI
-
-**kre8** is a **Thinking Infra Engine (TIE)** — context-aware, thinks, designs, and builds cloud infrastructure from natural language intent.
-
-At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into structured, policy-validated infrastructure design decisions before any HCL is generated and embodies true **Intent to Infra**.
+> ⚠️ **Work in Progress** — kre8 is under active development. The pipeline design is stable but most components are not yet implemented. Not ready for production use.
 
 ---
 
-## Core Pipeline
+## What is kre8?
+
+**kre8** is a **Thinking Infrastructure Engine (TIE)** — it translates natural language infrastructure intent into validated, policy-aware design decisions and executable HCL.
+
+At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the reasoning engine that transforms raw intent into a structured, inspectable design artifact (Kanvas) before any code is synthesized. Design transparency is the differentiator: kre8 shows its work before it writes a single line of HCL.
+
+---
+
+## How it works
 
 ```
-NLP Input
-  → kre8  (intent extraction → kit)
-  → konform  (kit validated against klaws policies)
-  → skout  (semantic search: katalog + kpedia)
-  → kloud-skan  (reads current infra state)
-  → kre8  (Kanvas design reasoning)
-  → konform  (Kanvas validated against klaws)
-  → koder  (HCL synthesis via Context7)
-  → kure  (validate + self-correct)
-  → kiosk  (HCL + Mermaid blueprint → developer)
+NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(kwery) → kanvas → konform(kg2) → koder → HCL
 ```
 
----
-
-## Components
-
-See [docs/components.md](docs/components.md) for the full phased component registry.
-
-| Component | Folder | Phase | Role |
-|---|---|---|---|
-| kre8 | `kre8/` | 1 | Brain — i2d2 orchestrator, NLP→SI→Kanvas |
-| konnekt | `konnekt/` | 1 | LLM adapter/agent router (LiteLLM) |
-| koder | `koder/` | 1 | HCL synthesis (DeepSeek-V3 + Context7) |
-| kure | `koder/kure/` | 1 | Validate + self-correct (Checkov + OpenTofu) |
-| konform | `konform/` | 1 | OPA policy engine wrapper |
-| klaws | `klaws/` | 1 | Rego policy definitions (LADE model) |
-| kontext | `kontext/` | 1 | Environment/workload context |
-| kiosk | `kiosk/` | 1 | Developer UI — prompt in, HCL out |
-| konsole | `konsole/` | 1 | Admin UI — kontext, klaws, konnekt config |
-
----
-
-## Architecture
-
-See [docs/architecture.md](docs/architecture.md) for principles and pipeline detail.
-
-**GitHub:** [klokworkai/kre8](https://github.com/klokworkai/kre8)
-**Mono-repo** — components will be split into individual repos in a future phase.
+1. **Kit** — extracts intent signals from natural language (never normalized)
+2. **klue + konform(kg1)** — infers applicable policies, validates intent before design begins
+3. **i2d2** — reasons over kit + policy context to produce a resource dependency graph (krux)
+4. **knit + kwery** — resolves provider config values to assemble the full infrastructure manifest (kanvas)
+5. **konform(kg2)** — validates the full design against policies before any code is written
+6. **koder** — synthesizes HCL from the validated kanvas
 
 ---
 
 ## Current State
 
-- End-to-end pipeline wired with stub logic
-- `StructuredIntent` schema in `kre8/intent_models.py` — basic, full schema is next milestone
-- `Kanvas` specced in `docs/schemas/si-kanvas.md` — not yet implemented as Pydantic model
-- No real LLM integration yet
-- No OPA integration yet
-- No HCL synthesis yet
+| Component | Status | Notes |
+|---|---|---|
+| konnekt | ✅ Done | Full LLM adapter — 5 provider families, GCP SM secrets |
+| Kit schema | ✅ Done | 14 signal categories, fully implemented in `i2d2/schemas.py` |
+| Krux schema | ✅ Done | DAG validation, layer model, depends_on — implemented in `i2d2/schemas.py` |
+| Kanvas schema | ✅ Done | Gate verdicts, design_conflicts — implemented in `i2d2/schemas.py` |
+| i2d2 | 🔄 In progress | FastAPI live, Kit extraction wired — koder not yet called |
+| kiosk | ⬜ Planned | Developer UI |
+| koder | ⬜ Planned | HCL synthesizer |
+| katalog | ⬜ Planned | Artifact store (stub first) |
+| konform, klaws, skope, klue, knit, kwery, skout, kpedia, komb | ⬜ Planned | Post-MVP |
 
-**Next milestone:** Full SI Pydantic schema → Kanvas schema → real LLM calls via konnekt
+---
+
+## Documentation
+
+- [Architecture](docs/architecture.md) — pipeline, principles, build state
+- [Components](docs/components.md) — full component registry
+- [Schemas](docs/schemas.md) — Kit, Krux, Kanvas schema reference
+- [ADRs](docs/decisions/adr.md) — architecture decision index
+
+---
+
+## Tech Stack
+
+- Python 3.11+ · Pydantic v2 · FastAPI
+- LLM routing via [LiteLLM](https://github.com/BerriAI/litellm) (konnekt)
+- Policy enforcement via [OPA](https://www.openpolicyagent.org/) + Rego (konform/klaws — planned)
+- HCL output: OpenTofu/Terraform-compatible
+
+---
+
+**GitHub:** [klokworkai/kre8](https://github.com/klokworkai/kre8)
+
+![kre8 Logo](./kre8-logo.png)

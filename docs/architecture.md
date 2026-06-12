@@ -1,6 +1,5 @@
 # kre8 — System Architecture
-**Product:** kre8 by klökwork AI
-**Last Updated:** April 2026
+**Last Updated:** June 2026
 
 ---
 
@@ -14,16 +13,6 @@ kre8 is not an IaC generator. It is a **decision engine** — it produces struct
 
 ---
 
-## Competitive Position
-
-| Product | Approach | Gap |
-|---|---|---|
-| StackGen / Aiden | NL → module catalog → Terraform | No explicit design artifact. Black box. |
-| Spacelift Intent | NL → cloud APIs directly | No HCL. Prototyping only. |
-| **kre8** | NL → Kit → Kanvas → HCL | i2d2 surfaces design as an explicit, inspectable, policy-validated artifact (Kanvas) before synthesis. **Design transparency is the moat.** |
-
----
-
 ## Full Pipeline
 
 ```
@@ -34,14 +23,14 @@ NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(
 
 | Stage | Component(s) | What happens |
 |---|---|---|
-| NLP → Kit | i2d2 + konnekt (Clerk) | Intent extracted into thin signal artifact. Values never normalized. |
-| Kit → kick | klue | kick (Kit Inferred Contextual Klaws) produced — applicable policy IDs resolved from kit + kontext. klue checks klues store in klaws before LLM inference. |
+| NLP → Kit | i2d2 + konnekt | Intent extracted into thin signal artifact. Values never normalized. |
+| Kit → kick | klue | kick (Kit Inferred Contextual Klaws) produced — applicable policy IDs resolved from kit + skope. klue checks klues store in klaws before LLM inference. |
 | Kit + kick → kg1 | konform | Kit validated against klaws. Pipeline halts on failure (unless kraken=true). |
-| kg1 → skout + skan | skout, skan | Semantic search over kpedia + cloud infra scan for design aid. skout produces skore. |
-| skore + skan findings → krux | i2d2 + konnekt (Architect) | Resource dependency graph generated. DAG + enum validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. |
+| kg1 → skout + skan | skout, skan | Semantic search over kpedia + cloud infra scan for design aid. |
+| skore + skan findings → krux | i2d2 + konnekt | Resource dependency graph generated. DAG + enum validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. |
 | krux → kanvas | knit + kwery | Provider konfig values resolved. Full infrastructure manifest assembled. |
 | kanvas → kg2 | konform | Kanvas validated against klaws. Violations recorded in design_conflicts[]. |
-| kanvas → HCL | koder + konnekt (Coder) | HCL synthesized and written to katalog. |
+| kanvas → HCL | koder + konnekt | HCL synthesized and written to katalog. |
 
 ---
 
@@ -50,14 +39,13 @@ NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(
 | Artifact | Description |
 |---|---|
 | **Kit** | Thin. Intent signals extracted as-is from NLP. No normalization. |
-| **kick** | Kit Inferred Contextual Klaws. Live per-run policy ID set produced by klue from kit + kontext. |
+| **kick** | Kit Inferred Contextual Klaws. Live per-run policy ID set produced by klue from kit + skope. |
 | **klues** | The kick store inside klaws. Previously inferred kicks promoted for reuse. Not a pipeline artifact — owned by klaws, read by klue. |
 | **krux** | Resource dependency graph — DAG of KruxResource nodes. |
-| **skore** | skout's re-ranked search results. Produced by skout, stored in kpedia, passed to i2d2 pre-Kanvas. |
-| **Kanvas** | Thick. Full infrastructure manifest — architecture decisions, resource map, konfig values, design conflicts. Single source of truth for koder. |
+| **kanvas** | Thick. Full infrastructure manifest — architecture decisions, resource map, konfig values, design conflicts. Single source of truth for koder. |
 | **HCL** | Synthesized OpenTofu/Terraform-compatible code. |
 
-Full schema definitions → `klokwork-design-log/kre8/schemas.md`
+Full schema definitions → `docs/schemas.md`
 
 ---
 
@@ -71,83 +59,56 @@ Full schema definitions → `klokwork-design-log/kre8/schemas.md`
 6. **Flat-root repo structure.** No `packages/`, `apps/`, or nested monorepo wrappers.
 7. **All LLM output must be Pydantic-validated.** No raw LLM strings passed downstream.
 8. **MCP extractability is a first-class design constraint.** Clean, generic I/O contracts. No domain assumptions baked into interfaces. See ADR-010.
-9. **Kit never normalizes.** Extracted signal values are as-is from NLP. Resolution is a kontext-informed i2d2 concern during Kanvas design.
+9. **Kit never normalizes.** Extracted signal values are as-is from NLP. Resolution is a skope-informed i2d2 concern during Kanvas design.
 10. **DAG validation is i2d2's responsibility.** Pydantic model validator on krux at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
 
 ---
 
-## Phase 1 MVP Pipeline
+## Current Build State (Phase 1 MVP)
 
-The Phase 1 pipeline is stubbed end-to-end with real I/O contracts. Only the critical path is real — everything else is stubbed in-memory.
+Only the critical path is being built first — everything else is not started or parked.
 
 ```
-kiosk       (real — input box + submit + HCL output display)
-  → i2d2    (real — orchestration + Kit extraction + Krux generation)
-    → konnekt   (real — LLM adapter)
-    → katalog   (stub — in-memory)
-  → koder   (real — HCL synthesis)
+kiosk       (TODO)
+  → i2d2    (INPROGRESS — FastAPI live, Kit extraction wired, koder not yet called)
+    → konnekt   (DONE — full LLM adapter)
+    → katalog   (TODO — stub in-memory)
+  → koder   (TODO)
 ```
-
----
-
-## Model Routing (via konnekt)
-
-| Task | Role | Model |
-|---|---|---|
-| Intent extraction | Clerk | GPT-4o-mini |
-| Design reasoning | Architect | Claude Sonnet (Opus for High/Critical — threshold TBD) |
-| HCL synthesis | Coder | DeepSeek-V3 |
-| Self-correction | Medic | Groq Llama 3.3 |
-
-Model names live in `konnekt/` only. Opus toggle logic lives in `i2d2/` only.
-
----
-
-## Versioning Model
-
-| Segment | Increment when |
-|---|---|
-| `v0 → v1` | Full pipeline real, no stubs in critical path, external users onboarded |
-| `x.N.0` | New component goes stub → real, or new component added to pipeline |
-| `x.x.N` | Schema field added/changed, prompt tuning, bug fix, stub behaviour changed |
-
-| Phase | Version range | Exit gate |
-|---|---|---|
-| Phase 1 MVP | v0.1.0 | End-to-end: NLP → Kit → Kanvas → HCL. kiosk + i2d2 + konnekt + koder real. katalog stubbed. |
-| Phase 2.1 | v0.2.0 – v0.3.0 | Policy gates + semantic search real |
-| Phase 2.2 | v0.4.0 | Post-gen validation + self-correction real |
-| Phase 3 | v1.0.0 | Ship-ready — auth, konsole, no stubs in critical path |
 
 ---
 
 ## Repository Structure
 
 ```
-klokworkai/kre8          ← mono-repo
+klokworkai/kre8
 ├── i2d2/                ← reasoning engine + orchestrator
 ├── konnekt/             ← LLM adapter
-├── koder/               ← HCL synthesizer
+├── koder/               ← HCL synthesizer (planned)
 │   └── kure/            ← post-koder lint + self-correct (parked)
-├── konform/             ← OPA policy engine wrapper
-├── klaws/               ← Rego policy definitions + klues store
+├── konform/             ← OPA policy engine wrapper (planned)
+├── klaws/               ← Rego policy definitions + klues store (planned)
 │   └── policies/
-├── kontext/             ← environment + workload context
-├── kiosk/               ← developer UI
-├── konsole/             ← admin UI (Phase 3)
-├── katalog/             ← artifact store (Phase 2.1)
-├── klue/                ← kick inference engine (Phase 2.1)
-├── knit/                ← Kanvas assembler (Phase 2.1)
-├── kwery/               ← provider value resolver (Phase 2.1)
-├── skout/               ← semantic search + re-ranking (Phase 2.1)
-│   └── skore/           ← re-ranked results artifact (parked)
-├── skan/                ← cloud infra scanner (in progress)
-├── kpedia/              ← RAG knowledge base (Phase 2.1)
-├── komb/                ← web scraper (Phase 2.1)
+├── skope/               ← environment + workload skope (planned)
+├── kiosk/               ← developer UI (planned)
+├── konsole/             ← admin UI (planned)
+├── katalog/             ← artifact store (planned)
+├── klue/                ← kick inference engine (planned)
+├── knit/                ← Kanvas assembler (planned)
+├── kwery/               ← provider value resolver (planned)
+├── skout/               ← semantic search + re-ranking (planned)
+├── skan/                ← cloud infra scanner (parked)
+├── kpedia/              ← RAG knowledge base (planned)
+├── komb/                ← web scraper (planned)
 ├── gate/                ← API ingress (parked)
-├── kron/                ← scheduler (Phase 2.2)
-├── kast/                ← Slack/webhook notifier (Phase 3)
+├── kron/                ← scheduler (planned)
+├── kast/                ← Slack/webhook notifier (planned)
+├── kli/                 ← CLI tool (parked)
 ├── stub_tests/          ← schema + stub validation
 └── docs/
+    ├── architecture.md  ← this file
+    ├── components.md    ← component registry
+    ├── schemas.md       ← schema reference
+    ├── decisions/       ← ADR index + individual ADR files
+    └── components/      ← per-component design specs
 ```
-
-Design log, ADRs, and component specs → `klokworkai/klokwork-design-log`
