@@ -45,3 +45,4 @@
 | ADR-039 | Composite/named sub-layers deferred post-MVP | Active |
 | ADR-040 | Environment handled by skope — not a schema field | Active |
 | ADR-041 | kraux renamed to kombine/konverge, feature deferred post-MVP | Active |
+| ADR-042 | kontext renamed to skope | Active |
