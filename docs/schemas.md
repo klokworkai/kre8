@@ -38,11 +38,16 @@ ExclusionSignal
   inferred: bool = False
 
 IntentType (enum)
-  PROVISION | MODIFY | DESTROY | QUERY
-  MVP runtime handles PROVISION only
+  PROVISION | MODIFY
+```
+
+> ⚠️ **CODE SYNC PENDING:** `schemas.py` still contains `DESTROY` and `QUERY` in the `IntentType` enum.
+> Trim to `PROVISION | MODIFY` once all docs are settled. Tracked in CLAUDE.md action items.
+
+```
 
 Kit
-  request_id: UUID = auto-generated
+  kit_id: UUID = auto-generated
   raw_input: str
   intent: IntentType
   kraken: bool = False
@@ -112,6 +117,11 @@ KruxResource
   depends_on: list[DependsOnEntry] = []
   konfig: dict = {}  # populated by knit
 
+TrailEntry
+  source: "skout" | "skan"   # which subsystem surfaced this
+  ref: str                    # match ID (skout) or finding ID (skan)
+  summary: str | None         # human-readable — what was surfaced
+
 Krux
   id: UUID = auto-generated
   name: str          # LLM-generated
@@ -121,6 +131,7 @@ Krux
   inputs: list[KruxInput] = []
   outputs: list[KruxOutput] = []
   resources: list[KruxResource]   # min_length=1
+  references: list[TrailEntry] = []   # design transparency trail — populated by i2d2 pre-krux
 ```
 
 > **Note for implementors:** `GateVerdict` uses `pass_` as the Python field name with `alias="pass"` to avoid collision with the Python keyword. Serialize/deserialize with `by_alias=True`.
