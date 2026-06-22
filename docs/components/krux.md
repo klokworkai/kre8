@@ -1,11 +1,11 @@
 # krux — Artifact Design
-**Status:** LOCKED | **Produced by:** i2d2 | **Consumed by:** knit, konform | **Stored in:** katalog
+**Status:** LOCKED | **Produced by:** i2d2 | **Consumed by:** i2d2, konform | **Stored in:** katalog
 
 ---
 
 ## Role
 
-Krux is the infrastructure design graph — the structured, validated representation of what needs to be built. Produced by i2d2 after Kit extraction and policy inference (kick), and before Kanvas assembly. Krux captures resources, their types, their layers, and their dependencies. It is the primary input to knit.
+Krux is the infrastructure design graph — the structured, validated representation of what needs to be built. Produced by i2d2 after Kit extraction and kick resolution, and before Kanvas assembly. Krux captures resources, their types, their layers, and their dependencies. It is the primary input to i2d2's kanvas assembly step. Krux carries a `references` trail recording what skout/skan surfaced during design — design transparency.
 
 ---
 
@@ -32,7 +32,12 @@ KruxResource
   name: str          # LLM-generated
   description: str   # LLM-generated
   depends_on: list[DependsOnEntry] = []
-  konfig: dict = {}  # populated by knit — opaque at krux level
+  konfig: dict = {}  # populated during kanvas assembly — opaque at krux level
+
+TrailEntry
+  source: "skout" | "skan"   # which subsystem surfaced this
+  ref: str                    # match ID (skout) or finding ID (skan)
+  summary: str | None         # human-readable — what was surfaced
 
 Krux
   id: UUID           # auto-generated
@@ -42,7 +47,8 @@ Krux
   kraken: bool = False
   inputs: list[KruxInput] = []
   outputs: list[KruxOutput] = []
-  resources: list[KruxResource]
+  resources: list[KruxResource]   # min_length=1
+  references: list[TrailEntry] = []   # design transparency trail — populated by i2d2 pre-krux
 ```
 
 ---
@@ -113,4 +119,4 @@ Retry loop: i2d2 retries LLM krux generation max 2 times on validation failure. 
 
 ## Relevant ADRs
 
-ADR-022 · ADR-023 · ADR-024 · ADR-027 · ADR-028 · ADR-029 · ADR-030 · ADR-031 · ADR-032 · ADR-033 · ADR-038
+ADR-005 · ADR-006 · ADR-007

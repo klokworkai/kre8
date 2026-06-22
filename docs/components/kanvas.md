@@ -1,13 +1,13 @@
 # kanvas — Artifact Design
-**Status:** LOCKED (MVP) | **Produced by:** knit | **Consumed by:** koder, konform | **Stored in:** katalog
+**Status:** LOCKED (MVP) | **Produced by:** i2d2 | **Consumed by:** koder, konform | **Stored in:** katalog
 
 ---
 
 ## Role
 
-Kanvas is the full infrastructure manifest — the complete, policy-validated, konfig-resolved artifact that koder synthesizes into HCL. It wraps a krux (with konfig populated by knit via kwery) and carries the design_conflicts verdict from both konform gates.
+Kanvas is the full infrastructure manifest — the complete, policy-validated, konfig-resolved artifact that koder synthesizes into HCL. It wraps a krux (with konfig resolved and assembled directly by i2d2) and carries the design_conflicts verdict from both konform gates.
 
-Kanvas is stored in katalog pre-kg2 gate (ADR-035). koder receives kanvas only after kg2 passes (or kraken is true).
+Kanvas is stored in katalog pre-kg2 gate. koder receives kanvas only after kg2 passes (or kraken is true).
 
 ---
 
@@ -16,7 +16,7 @@ Kanvas is stored in katalog pre-kg2 gate (ADR-035). koder receives kanvas only a
 ```
 GateVerdict
   pass: bool
-  violated_klaws_ids: list[str] = []
+  violated_klue_registry_ids: list[str] = []
 
 DesignConflicts
   kg1: GateVerdict
@@ -34,15 +34,15 @@ Kanvas
 
 ## Notes on konfig
 
-`konfig` is the resolved configuration block produced by knit (via kwery). At MVP, knit is not in the pipeline — `konfig` is an empty dict. The shape will be defined during the knit design session.
+`konfig` is the resolved configuration block assembled by i2d2 during kanvas assembly. At MVP, `konfig` is an empty dict. The shape will be defined during the kanvas assembly design session.
 
 ---
 
 ## Lifecycle
 
 ```
-i2d2 → knit → kanvas produced
-  → katalog.write(kanvas)           # pre-kg2 (ADR-035)
+i2d2 assembles kanvas from krux
+  → katalog.write(kanvas)           # pre-kg2
   → konform(kanvas, kick_id)        # kg2 gate
     → kanvas.design_conflicts.kg2 updated
   → if kg2.pass OR kraken:
@@ -63,12 +63,13 @@ When `kraken: true`:
 
 ## Design Decisions
 
-- Kanvas stored pre-kg2 — i2d2 writes to katalog before gate runs (ADR-035)
-- konform is purely stateless — never writes to katalog (ADR-036)
+- Kanvas stored pre-kg2 — i2d2 writes to katalog before gate runs
+- konform is purely stateless — never writes to katalog
 - i2d2 is the only writer to katalog
-- `konfig` is opaque at MVP (`dict = {}`) — typed during knit design
+- `konfig` is opaque at MVP (`dict = {}`) — typed during kanvas assembly design
 - `design_conflicts` carries both gate verdicts — kg1 populated at kit gate, kg2 at kanvas gate
+- `violated_klue_registry_ids` — references klue registry policy IDs, not klaws
 
 ## Relevant ADRs
 
-ADR-033 · ADR-034 · ADR-035 · ADR-036 · ADR-038
+ADR-002 · ADR-003 · ADR-004 · ADR-006 · ADR-007
