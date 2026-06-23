@@ -13,13 +13,13 @@
 | koder | `koder/` | HCL synthesizer. | konnekt, HashiCorp Terraform MCP | i2d2 | TODO |
 | katalog | `katalog/` | Artifact store — kit, kick, krux, kanvas, HCL. Stub at MVP. | — | i2d2, koder, skout | TODO |
 | konform | `konform/` | Stateless policy gate (OPA). Validates kit+kick at kg1, kanvas at kg2. Never writes, never designs. | klue registry | i2d2 | NOT STARTED |
-| klue registry | `klue_registry/` | Policy definitions only — pure data store, no behavior. Source of truth for what is allowed/denied/limited. | — | i2d2, konform | NOT STARTED |
-| skope | `skope/` | Environment + workload context. Scopes what a user is allowed to design with. | — | i2d2 | NOT STARTED |
+| klue registry | `klue_registry/` | Store of all Klue policy objects. A Klue is a single atomic policy rule (DEAL model). Klues are skope-independent — reusable across skopes. | — | i2d2, konform, skope | NOT STARTED |
+| skope | `skope/` | Named policy boundary. Thin by design — no rules of its own. Behaviour defined entirely by assigned Klues. Owns Klue assignment sanity check (conflict detection). | klue registry | i2d2 | NOT STARTED |
 | skout | `skout/` | Semantic search + re-ranking over kpedia. Surfaces similar prior designs pre-krux. | kpedia | i2d2 | NOT STARTED |
 | skan | `skan/` | Cloud infra scanner — reads live cloud state. Dual call path: direct from kiosk (mermaid.js diagrams) and from i2d2 (design context for MODIFY). | cloud APIs (Steampipe) | i2d2, kiosk | NOT STARTED |
 | kpedia | `kpedia/` | RAG knowledge base — pillars, forums, provider docs, skan findings. pgvector. Owns its own scheduled scraping/ingestion internally. | — | skout | NOT STARTED |
 | kast | `kast/` | Slack/webhook notifier. | external webhooks | i2d2 | NOT STARTED |
-| konsole | `konsole/` | Admin UI — manages skope, klue registry config. | skope, klue registry | — | NOT STARTED |
+| konsole | `konsole/` | Admin UI — manages skope, Klue registry config. Owns Klue authoring (NLP conversion + structured upload), Klue assignment, and conflict surfacing. | skope, klue registry | — | NOT STARTED |
 
 ---
 
