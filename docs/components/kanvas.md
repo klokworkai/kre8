@@ -58,7 +58,7 @@ When `kraken: true`:
 - i2d2 does NOT halt on gate failures
 - koder is NOT invoked in kraken mode — kanvas is the terminal output. Skipping koder avoids an expensive LLM call on what may be an experimental or review-only run.
 - A manual approval step is required before koder can be invoked post-kraken review.
-- `kraken` propagates kit → kick → krux → kanvas for full traceability
+- `kraken` propagates kit → kick → kraph → kanvas for full traceability
 
 > ⚠️ **TODO (design):** Define the manual approval mechanism for kraken → koder invocation (kiosk approval flow, CLI flag, or explicit re-submit with kraken: false).
 

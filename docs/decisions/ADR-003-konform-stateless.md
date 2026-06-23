@@ -17,7 +17,7 @@ Every one of those additions would compromise its reliability as a judge.
 konform is a pure stateless judge. Its contract is:
 
 - **Input:** artifact (kit or kanvas) + kick (resolved policy ID set)
-- **Output:** `{ pass: bool, violated_policy_ids: [str] }`
+- **Output:** `{ pass: bool, violated_klue_ids: [str] }`
 - **Side effects:** none
 
 konform never writes to katalog or any persistent store. It never produces a

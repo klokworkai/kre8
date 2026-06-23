@@ -8,10 +8,10 @@
 Policy enforcement could happen at any point in the pipeline. Options considered:
 
 - **One gate post-kanvas only** — validate the final artifact before HCL synthesis.
-  Simple, but expensive: a full krux + kanvas assembly runs before discovering the
+  Simple, but expensive: a full kraph + kanvas assembly runs before discovering the
   intent was never permitted. Also loses early signal about why a design failed.
 
-- **Inline validation per resource** — konform called per-resource during krux
+- **Inline validation per resource** — konform called per-resource during kraph
   generation. Fine-grained but couples the design loop tightly to policy evaluation,
   making retries complex and konform stateful.
 

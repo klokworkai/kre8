@@ -31,9 +31,9 @@ konform is the policy gate executor. Stateless judge. It validates kit (kg1) and
 
 **On denial:** konform returns `violated_klue_ids` only. Human-readable messages live on klue registry policies. kiosk renders messages by looking up violated IDs in klue registry. Raw policy codes never surface to users directly.
 
-**DAG and structural validation:** NOT konform's job. i2d2 owns DAG validation as a Pydantic model validator on kraph. See ADR-024.
+**DAG and structural validation:** NOT konform's job. i2d2 owns DAG validation as a Pydantic model validator on kraph. See ADR-005.
 
-**Kraken mode:** konform gates run normally regardless of kraken state. When `kraken: true`, i2d2 does not halt on violations — it collects them. konform's pure-judge contract is unchanged. See ADR-038.
+**Kraken mode:** konform gates run normally regardless of kraken state. When `kraken: true`, i2d2 does not halt on violations — it collects them. konform's pure-judge contract is unchanged. (Kraken mechanics are post-MVP — no ADR yet.)
 
 ---
 
