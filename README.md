@@ -15,12 +15,12 @@ At its core is **i2d2** (Intelligent Infrastructure Design Decision) — the rea
 ## How it works
 
 ```
-NLP → Kit → kick → konform(kg1) → krux → kanvas → konform(kg2) → koder → HCL
+NLP → Kit → kick → konform(kg1) → kraph → kanvas → konform(kg2) → koder → HCL
 ```
 
 1. **Kit** — extracts intent signals from natural language (never normalized); stored as its own artifact, reusable across environments
 2. **kick + konform(kg1)** — i2d2 resolves applicable policies from the klue registry, validates intent before design begins
-3. **i2d2** — reasons over kit + kick (consulting prior designs and live infra scans as needed) to produce a resource dependency graph (krux)
+3. **i2d2** — reasons over kit + kick (consulting prior designs and live infra scans as needed) to produce a resource dependency graph (kraph)
 4. **i2d2** — resolves provider config values and assembles the full infrastructure manifest (kanvas)
 5. **konform(kg2)** — validates the full design against policies before any code is written
 6. **koder** — synthesizes HCL from the validated kanvas, strictly implementing what kanvas specifies
@@ -33,7 +33,7 @@ NLP → Kit → kick → konform(kg1) → krux → kanvas → konform(kg2) → k
 |---|---|---|
 | konnekt | ✅ Done | Full LLM adapter — 5 provider families, GCP SM secrets |
 | Kit schema | ✅ Done | 14 signal categories, standalone artifact with its own ID, in `i2d2/schemas.py` |
-| Krux schema | ✅ Done | DAG validation, layer model, depends_on — implemented in `i2d2/schemas.py` |
+| Kraph schema | ✅ Done | DAG validation, layer model, depends_on, Mermaid DSL field — implemented in `i2d2/schemas.py` |
 | Kanvas schema | ✅ Done | Gate verdicts, design_conflicts — implemented in `i2d2/schemas.py` |
 | i2d2 | 🔄 In progress | FastAPI live, Kit extraction wired — now also owns kick resolution and kanvas assembly directly; koder not yet called |
 | kiosk | ⬜ Planned | Developer UI |
@@ -49,8 +49,8 @@ NLP → Kit → kick → konform(kg1) → krux → kanvas → konform(kg2) → k
 
 - [Architecture](docs/architecture.md) — pipeline, principles, build state
 - [Components](docs/components.md) — full component registry
-- [Schemas](docs/schemas.md) — Kit, Krux, Kanvas schema reference
-- [ADRs](docs/decisions/adr.md) — architecture decision index
+- [Schemas](docs/schemas.md) — Kit, Kraph, Kanvas schema reference
+- [ADRs](docs/decisions/README.md) — architecture decision index
 
 ---
 

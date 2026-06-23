@@ -22,7 +22,7 @@ Policy enforcement could happen at any point in the pipeline. Options considered
 
 Two explicit konform gates:
 
-**kg1 — Kit gate** — runs after Kit extraction, before krux generation. Validates
+**kg1 — Kit gate** — runs after Kit extraction, before kraph generation. Validates
 that the raw intent (resource types, regions, patterns) is permitted under the
 active klue registry policies for this skope. A kg1 failure halts the pipeline
 before any design work begins. Fast fail, cheap.
@@ -37,7 +37,7 @@ kg2 catches boundary violations on resolved values.
 
 ## Consequences
 
-- Design work only starts after kg1 passes — no wasted krux generation on
+- Design work only starts after kg1 passes — no wasted kraph generation on
   clearly impermissible intent
 - kg2 failures are rare but meaningful — they indicate the resolved design
   exceeded a boundary that the raw intent did not

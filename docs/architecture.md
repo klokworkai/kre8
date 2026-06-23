@@ -16,10 +16,10 @@ kre8 is not an IaC generator. It is a **decision engine** — it produces struct
 ## Full Pipeline
 
 ```
-NLP → Kit → kick → konform(kg1) → krux → kanvas → konform(kg2) → koder → HCL
+NLP → Kit → kick → konform(kg1) → kraph → kanvas → konform(kg2) → koder → HCL
 ```
 
-> skout and skan are summoned by i2d2 during krux generation as needed — not pipeline stages.
+> skout and skan are summoned by i2d2 during kraph generation as needed — not pipeline stages.
 
 ### Stage Breakdown
 
@@ -54,13 +54,13 @@ Full schema definitions → `docs/schemas.md`
 1. **LLM is non-authoritative.** Structured JSON only — never directly generates or executes IaC.
 2. **Kit is thin. Kanvas is thick.** Kit = intent signals. Kanvas = full infrastructure manifest.
 3. **Policy gates are mandatory.** Kit and Kanvas must both pass konform/OPA before proceeding.
-4. **Policy judgment is the one strictly isolated concern.** konform never writes to katalog and never produces or revises a design. i2d2 is the sole design authority and sole katalog writer across intent extraction, kick resolution, krux generation, and kanvas assembly.
+4. **Policy judgment is the one strictly isolated concern.** konform never writes to katalog and never produces or revises a design. i2d2 is the sole design authority and sole katalog writer across intent extraction, kick resolution, kraph generation, and kanvas assembly.
 5. **No premature execution coupling.** Do not wire rendering or execution into design components.
 6. **Flat-root repo structure.** No `packages/`, `apps/`, or nested monorepo wrappers.
 7. **All LLM output must be Pydantic-validated.** No raw LLM strings passed downstream.
 8. **Clean, generic I/O contracts.** No domain assumptions baked into interfaces.
 9. **Kit never normalizes.** Extracted signal values are as-is from NLP. Resolution is a skope-informed i2d2 concern during Kanvas design.
-10. **DAG validation is i2d2's responsibility.** Pydantic model validator on krux at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
+10. **DAG validation is i2d2's responsibility.** Pydantic model validator on kraph at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
 
 ---
 

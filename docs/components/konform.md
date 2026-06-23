@@ -5,7 +5,7 @@
 
 ## Role
 
-konform is the policy gate executor. Stateless judge. It validates kit (kg1) and kanvas (kg2) against klaws policies referenced via kick_id. It never designs. It never writes to persistent stores. It only judges.
+konform is the policy gate executor. Stateless judge. It validates kit (kg1) and kanvas (kg2) against klue registry policies referenced via kick_id. It never designs. It never writes to persistent stores. It only judges.
 
 ---
 
@@ -20,7 +20,7 @@ konform is the policy gate executor. Stateless judge. It validates kit (kg1) and
 ## Gate Contract
 
 **kg1 — Kit gate**
-- Invoked by i2d2 post-kit, post-kick (pre-krux)
+- Invoked by i2d2 post-kit, post-kick (pre-kraph)
 - Inputs: `(kit, kick_id)`
 - Output: `{pass: bool, violated_klue_ids: [...]}`
 

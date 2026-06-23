@@ -24,7 +24,7 @@ extracted exactly as they appear in the NLP input — no normalization, no mappi
 no inference beyond identifying that a signal is present and which category it
 belongs to.
 
-Resolution happens in i2d2 during krux generation, informed by skope and the
+Resolution happens in i2d2 during kraph generation, informed by skope and the
 active klue registry policies (via kick). At that point, the full context is
 available: what the skope permits, what policies constrain, what prior designs
 suggest.
@@ -40,7 +40,7 @@ modified — only their presence is inferred.
 - The same Kit can be re-resolved under a different skope and produce a different
   design — cross-skope reuse is valid because Kit carries raw intent, not resolved
   decisions
-- Downstream components (krux generation, konform) receive vague values and must
+- Downstream components (kraph generation, konform) receive vague values and must
   handle them — this is intentional
 - Debugging a design decision traces back to i2d2's resolution logic, not Kit
   extraction — Kit is always inspectable as a clean record of original intent

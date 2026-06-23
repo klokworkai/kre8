@@ -23,7 +23,7 @@ pipeline. Specifically:
 
 - i2d2 extracts Kit and writes it to katalog
 - i2d2 resolves kick and writes it to katalog
-- i2d2 generates krux and writes it to katalog
+- i2d2 generates kraph and writes it to katalog
 - i2d2 assembles kanvas and writes it to katalog
 - i2d2 appends gate verdicts (from konform) to the kanvas record in katalog
 - koder writes HCL to katalog — this is the one delegated write, scoped strictly
