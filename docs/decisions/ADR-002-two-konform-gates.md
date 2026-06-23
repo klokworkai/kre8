@@ -24,7 +24,7 @@ Two explicit konform gates:
 
 **kg1 — Kit gate** — runs after Kit extraction, before kraph generation. Validates
 that the raw intent (resource types, regions, patterns) is permitted under the
-active klue registry policies for this skope. A kg1 failure halts the pipeline
+active krule_registry policies for this skope. A kg1 failure halts the pipeline
 before any design work begins. Fast fail, cheap.
 
 **kg2 — Kanvas gate** — runs after kanvas assembly, before koder. Validates the
@@ -32,7 +32,7 @@ full resolved manifest — explicit konfig values, resource configurations, cost
 boundaries. kg2 catches what kg1 cannot: violations that only become visible once
 vague intent is resolved into concrete values.
 
-Both gates use the same klue registry policies. kg1 catches coarse violations;
+Both gates use the same krule_registry policies. kg1 catches coarse violations;
 kg2 catches boundary violations on resolved values.
 
 ## Consequences

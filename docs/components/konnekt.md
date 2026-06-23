@@ -1,5 +1,5 @@
 # konnekt — Component Design
-**Status:** DONE | **Folder:** `konnekt/`
+**Status:** INPROGRESS | **Folder:** `konnekt/`
 
 ---
 

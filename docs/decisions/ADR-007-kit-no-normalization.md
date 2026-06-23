@@ -25,7 +25,7 @@ no inference beyond identifying that a signal is present and which category it
 belongs to.
 
 Resolution happens in i2d2 during kraph generation, informed by skope and the
-active klue registry policies (via kick). At that point, the full context is
+active krule_registry policies (via kick). At that point, the full context is
 available: what the skope permits, what policies constrain, what prior designs
 suggest.
 

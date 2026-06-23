@@ -17,7 +17,7 @@ Every one of those additions would compromise its reliability as a judge.
 konform is a pure stateless judge. Its contract is:
 
 - **Input:** artifact (kit or kanvas) + kick (resolved policy ID set)
-- **Output:** `{ pass: bool, violated_klue_ids: [str] }`
+- **Output:** `{ pass: bool, violated_krule_ids: [str] }`
 - **Side effects:** none
 
 konform never writes to katalog or any persistent store. It never produces a
@@ -26,7 +26,7 @@ verdicts to inform the current one. Each gate call is fully self-contained.
 
 Structural validation (DAG correctness, schema conformance) is not konform's
 responsibility — that belongs to i2d2 via Pydantic. konform evaluates policy
-only: is this artifact permitted under the active klue registry rules?
+only: is this artifact permitted under the active krule_registry rules?
 
 ## Consequences
 

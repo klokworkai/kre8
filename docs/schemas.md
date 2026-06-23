@@ -86,7 +86,7 @@ Kit
 | 13 | `exclusions` | `ExclusionSignal` | Negative preferences |
 | 14 | `complexity_flags` | `list[str]` | High-complexity terms — scored downstream |
 
-**Parked (post-MVP):** `environment_stage` · `compliance_signals` · `ownership_signals` · `integration_signals`
+**Parked:** `environment_stage` · `compliance_signals` · `ownership_signals` · `integration_signals`
 
 ---
 
@@ -126,7 +126,7 @@ Kraph
   id: UUID = auto-generated
   name: str          # LLM-generated
   description: str   # LLM-generated
-  region: str        # loaded from i2d2/config.yaml — skope-inherited post-MVP
+  region: str        # loaded from i2d2/config.yaml
   kraken: bool = False
   inputs: list[KraphInput] = []
   outputs: list[KraphOutput] = []
@@ -147,7 +147,7 @@ Kraph
 kick
   kick_id: UUID = auto-generated
   kit_id: UUID               # references Kit this kick was resolved from
-  klue_ids: list[str]        # resolved klue registry policy IDs applicable to this run
+  krule_ids: list[str]       # resolved krule_registry policy IDs applicable to this run
 ```
 
 > kick is intentionally minimal — it is a resolved binding of a Kit to applicable policy IDs. No config, no signals, no design content.
@@ -161,7 +161,7 @@ kick
 ```
 GateVerdict
   pass_: bool  (serialized as "pass" — alias field, see note above)
-  violated_klue_ids: list[str] = []
+  violated_krule_ids: list[str] = []
 
 DesignConflicts
   kg1: GateVerdict
@@ -170,7 +170,7 @@ DesignConflicts
 Kanvas
   id: UUID = auto-generated
   kraph: Kraph
-  konfig: dict = {}           # opaque at MVP — typed during kanvas assembly design
+  konfig: dict = {}           # opaque — typed during kanvas assembly design
   design_conflicts: DesignConflicts
   kraken: bool = False        # propagated from kraph
 ```
@@ -184,7 +184,7 @@ Kanvas
 
 ---
 
-## Klue Schema
+## krule Schema
 **Status:** Not started ⬜
 
-> Design session pending. Klue is the policy object — Rego-based, DEAL model (Deny / Exception / Allow / Limit). Klue Registry is the store.
+> Design session pending. krule (Kre8 Rule) is the atomic policy object — DEAL model (Deny / Allow+Limit). krule_registry is the store.

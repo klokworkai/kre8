@@ -10,7 +10,7 @@ is a rejected design — why keep it?
 
 Two reasons that intuition breaks down:
 
-First, kg1 and kg2 apply the same klue registry rules. A kit that passes kg1
+First, kg1 and kg2 apply the same krule_registry rules. A kit that passes kg1
 and produces a full kanvas will almost always pass kg2. The rare kg2 failure
 occurs when vague intent in the kit resolves to explicit konfig values that
 breach a boundary (a cost limit, a region restriction, a specific instance type

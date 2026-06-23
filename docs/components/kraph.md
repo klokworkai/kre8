@@ -45,7 +45,7 @@ Kraph
   id: UUID           # auto-generated
   name: str          # LLM-generated
   description: str   # LLM-generated
-  region: str        # default "us-east-1" — skope-inherited post-MVP
+  region: str        # default "us-east-1" — skope-inherited
   kraken: bool = False
   inputs: list[KraphInput] = []
   outputs: list[KraphOutput] = []
