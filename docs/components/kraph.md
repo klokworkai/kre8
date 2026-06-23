@@ -1,11 +1,13 @@
-# krux — Artifact Design
+# kraph — Artifact Design
 **Status:** LOCKED | **Produced by:** i2d2 | **Consumed by:** i2d2, konform | **Stored in:** katalog
 
 ---
 
 ## Role
 
-Krux is the infrastructure design graph — the structured, validated representation of what needs to be built. Produced by i2d2 after Kit extraction and kick resolution, and before Kanvas assembly. Krux captures resources, their types, their layers, and their dependencies. It is the primary input to i2d2's kanvas assembly step. Krux carries a `references` trail recording what skout/skan surfaced during design — design transparency.
+Kraph is the infrastructure design graph — the structured, validated representation of what needs to be built. Produced by i2d2 after Kit extraction and kick resolution, and before Kanvas assembly. Kraph captures resources, their types, their layers, and their dependencies. It is the primary input to i2d2's kanvas assembly step. Kraph carries a `references` trail recording what skout/skan surfaced during design — design transparency.
+
+Kraph is a two-part artifact: `resources` (the typed DAG) and `dsl` (Mermaid DSL). Both are generated atomically by i2d2 at construction time. The DSL is a deterministic serialization of the graph — no LLM call required. kiosk renders it on demand from katalog.
 
 ---
 
@@ -16,40 +18,49 @@ DependsOnEntry
   role: str          # "<namespace>:<resource_type>" — e.g., "nw:vpc"
   ref: str           # local resource id OR "$inputs.<name>"
 
-KruxInput
+KraphInput
   name: str
   role: str          # "<namespace>:<resource_type>"
   required: bool
 
-KruxOutput
+KraphOutput
   name: str
   ref: str           # local resource id
 
-KruxResource
-  id: str            # unique within krux
+KraphResource
+  id: str            # unique within kraph
   type: str          # "<namespace>:<resource_type>"
   layer: list[str]   # non-empty — values in {foundation, app, data}
   name: str          # LLM-generated
   description: str   # LLM-generated
   depends_on: list[DependsOnEntry] = []
-  konfig: dict = {}  # populated during kanvas assembly — opaque at krux level
+  konfig: dict = {}  # populated during kanvas assembly — opaque at kraph level
 
 TrailEntry
   source: "skout" | "skan"   # which subsystem surfaced this
   ref: str                    # match ID (skout) or finding ID (skan)
   summary: str | None         # human-readable — what was surfaced
 
-Krux
+Kraph
   id: UUID           # auto-generated
   name: str          # LLM-generated
   description: str   # LLM-generated
   region: str        # default "us-east-1" — skope-inherited post-MVP
   kraken: bool = False
-  inputs: list[KruxInput] = []
-  outputs: list[KruxOutput] = []
-  resources: list[KruxResource]   # min_length=1
-  references: list[TrailEntry] = []   # design transparency trail — populated by i2d2 pre-krux
+  inputs: list[KraphInput] = []
+  outputs: list[KraphOutput] = []
+  resources: list[KraphResource]   # min_length=1
+  references: list[TrailEntry] = []   # design transparency trail — populated by i2d2 pre-kraph
+  dsl: str = ""      # Mermaid DSL — generated deterministically by i2d2 at construction time
 ```
+
+---
+
+## DSL Generation
+
+`dsl` is a pure function of the graph — i2d2 walks `resources` and `depends_on` edges and emits Mermaid DSL string. No LLM call. Generated in the same operation as the Kraph struct and written to katalog together. If the retry loop produces a revised Kraph, both fields are overwritten atomically.
+
+kiosk fetches `dsl` from katalog and passes it directly to mermaid.js. kiosk has no knowledge of Kraph's internal structure.
 
 ---
 
@@ -57,7 +68,7 @@ Krux
 
 | Layer | Namespaces |
 |-------|------------|
-| `foundation` | `nw`, `sec`, `iam`, `storage`, `db` — closed set (ADR-028) |
+| `foundation` | `nw`, `sec`, `iam`, `storage`, `db` — closed set |
 | `app` | `compute`, and others — open set |
 | `data` | no fixed namespace — contextual |
 
@@ -73,9 +84,9 @@ Krux
 6. The `(role, ref)` pair must be type-consistent — referenced resource's `type` must match `role`
 7. The `depends_on` graph must be acyclic (DAG validation)
 8. No two resources share an `id`
-9. Inputs marked `required: true` must be supplied at krux instantiation
+9. Inputs marked `required: true` must be supplied at kraph instantiation
 
-Retry loop: i2d2 retries LLM krux generation max 2 times on validation failure. Beyond that → `design_conflicts[]`.
+Retry loop: i2d2 retries LLM kraph generation max 2 times on validation failure. Beyond that → `design_conflicts[]`.
 
 ---
 

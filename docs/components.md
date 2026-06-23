@@ -29,7 +29,7 @@
 |---|---|---|---|
 | kit | i2d2 | i2d2, konform | katalog |
 | kick | i2d2 | i2d2, konform | katalog |
-| krux | i2d2 | i2d2, konform | katalog |
+| kraph | i2d2 | i2d2, konform | katalog |
 | kanvas | i2d2 | koder, konform | katalog |
 | skan findings | skan | i2d2 | TBD |
 | HCL | koder | — | katalog |

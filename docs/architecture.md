@@ -28,8 +28,8 @@ NLP → Kit → kick → konform(kg1) → krux → kanvas → konform(kg2) → k
 | NLP → Kit | i2d2 + konnekt | Intent extracted into thin signal artifact. Values never normalized. |
 | Kit → kick | i2d2 | kick produced — kit_id + resolved klue registry policy IDs. i2d2 reads klue registry directly and infers via its own LLM call. Checks katalog for existing matching kick before re-resolving. |
 | Kit + kick → kg1 | konform | Kit + kick validated against klue registry. Pipeline halts on failure (unless kraken=true). |
-| kg1 → krux | i2d2 + konnekt | skout and skan optionally summoned for design context. Resource dependency graph generated. DAG validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. Trail of skout/skan findings recorded in krux.references. |
-| krux → kanvas | i2d2 + konnekt | Config values resolved. Full infrastructure manifest assembled directly by i2d2. |
+| kg1 → kraph | i2d2 + konnekt | skout and skan optionally summoned for design context. Resource dependency graph generated. DAG validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. Mermaid DSL generated deterministically and written to katalog atomically with kraph. Trail of skout/skan findings recorded in kraph.references. |
+| kraph → kanvas | i2d2 + konnekt | Config values resolved. Full infrastructure manifest assembled directly by i2d2. |
 | kanvas → kg2 | konform | Kanvas validated against klue registry. Violations recorded in design_conflicts[]. Kanvas always stored in katalog regardless of kg2 outcome. |
 | kanvas → HCL | koder + konnekt | HCL synthesized and written to katalog. |
 
@@ -41,7 +41,7 @@ NLP → Kit → kick → konform(kg1) → krux → kanvas → konform(kg2) → k
 |---|---|
 | **Kit** | Thin. Intent signals extracted as-is from NLP. No normalization. Standalone artifact — reusable across skopes. |
 | **kick** | kit_id + resolved klue registry policy IDs for this run. Produced by i2d2. |
-| **krux** | Resource dependency graph — DAG of KruxResource nodes. Carries references trail of skout/skan findings. |
+| **kraph** | Resource dependency graph — DAG of KraphResource nodes. Carries references trail of skout/skan findings. Also carries `dsl` — Mermaid DSL generated deterministically at construction time. |
 | **kanvas** | Thick. Full infrastructure manifest — architecture decisions, resource map, konfig values, design conflicts. Single source of truth for koder. Always stored in katalog regardless of kg2 outcome. |
 | **HCL** | Synthesized OpenTofu/Terraform-compatible code. |
 

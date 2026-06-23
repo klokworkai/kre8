@@ -90,51 +90,67 @@ Kit
 
 ---
 
-## Krux Schema
+## Kraph Schema
 **File:** `i2d2/schemas.py` | **Status:** Implemented ✅
-**Design file:** `docs/components/krux.md`
+**Design file:** `docs/components/kraph.md`
 
 ```
 DependsOnEntry
   role: str          # "<namespace>:<resource_type>"
   ref: str           # local resource id OR "$inputs.<name>"
 
-KruxInput
+KraphInput
   name: str
   role: str          # "<namespace>:<resource_type>"
   required: bool
 
-KruxOutput
+KraphOutput
   name: str
   ref: str           # local resource id
 
-KruxResource
-  id: str            # unique within krux
+KraphResource
+  id: str            # unique within kraph
   type: str          # "<namespace>:<resource_type>"
   layer: list[str]   # non-empty — {foundation, app, data}
   name: str          # LLM-generated
   description: str   # LLM-generated
   depends_on: list[DependsOnEntry] = []
-  konfig: dict = {}  # populated by knit
+  konfig: dict = {}  # populated during kanvas assembly
 
 TrailEntry
   source: "skout" | "skan"   # which subsystem surfaced this
   ref: str                    # match ID (skout) or finding ID (skan)
   summary: str | None         # human-readable — what was surfaced
 
-Krux
+Kraph
   id: UUID = auto-generated
   name: str          # LLM-generated
   description: str   # LLM-generated
   region: str        # loaded from i2d2/config.yaml — skope-inherited post-MVP
   kraken: bool = False
-  inputs: list[KruxInput] = []
-  outputs: list[KruxOutput] = []
-  resources: list[KruxResource]   # min_length=1
-  references: list[TrailEntry] = []   # design transparency trail — populated by i2d2 pre-krux
+  inputs: list[KraphInput] = []
+  outputs: list[KraphOutput] = []
+  resources: list[KraphResource]   # min_length=1
+  references: list[TrailEntry] = []   # design transparency trail — populated by i2d2 pre-kraph
+  dsl: str = ""      # Mermaid DSL — generated deterministically by i2d2 at construction time
 ```
 
 > **Note for implementors:** `GateVerdict` uses `pass_` as the Python field name with `alias="pass"` to avoid collision with the Python keyword. Serialize/deserialize with `by_alias=True`.
+
+---
+
+## kick Schema
+**File:** `i2d2/schemas.py` | **Status:** Not implemented ⬜
+**Design file:** `docs/components/i2d2.md`
+
+```
+kick
+  kick_id: UUID = auto-generated
+  kit_id: UUID               # references Kit this kick was resolved from
+  klue_ids: list[str]        # resolved klue registry policy IDs applicable to this run
+```
+
+> kick is intentionally minimal — it is a resolved binding of a Kit to applicable policy IDs. No config, no signals, no design content.
 
 ---
 
@@ -145,7 +161,7 @@ Krux
 ```
 GateVerdict
   pass_: bool  (serialized as "pass" — alias field, see note above)
-  violated_klaws_ids: list[str] = []
+  violated_klue_ids: list[str] = []
 
 DesignConflicts
   kg1: GateVerdict
@@ -153,10 +169,10 @@ DesignConflicts
 
 Kanvas
   id: UUID = auto-generated
-  krux: Krux
-  konfig: dict = {}           # opaque at MVP — typed when knit is designed
+  kraph: Kraph
+  konfig: dict = {}           # opaque at MVP — typed during kanvas assembly design
   design_conflicts: DesignConflicts
-  kraken: bool = False        # propagated from krux
+  kraken: bool = False        # propagated from kraph
 ```
 
 ---
@@ -168,7 +184,7 @@ Kanvas
 
 ---
 
-## Klaws Schema
+## Klue Schema
 **Status:** Not started ⬜
 
-> Design session pending.
+> Design session pending. Klue is the policy object — Rego-based, DEAL model (Deny / Exception / Allow / Limit). Klue Registry is the store.

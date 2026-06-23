@@ -18,6 +18,7 @@ complete(
     prompt: str,
     config: KonnektConfig,
     model_select: tuple[int, int] | None = None,
+    attachments: list[Attachment] | None = None,
 ) -> str
 ```
 
@@ -28,6 +29,7 @@ complete(
 | `prompt` | `str` | Raw string. Caller owns construction. |
 | `config` | `KonnektConfig` | Pydantic model — temperature, max_tokens, timeout. |
 | `model_select` | `tuple[int, int] \| None` | Optional override: `(family_idx, tier_idx)`. i2d2 uses `(3, 2)` for Opus toggle. |
+| `attachments` | `list[Attachment] \| None` | Optional list of file attachments — any type the caller needs to pass to the LLM (architecture diagrams, PDFs, requirement docs, images, etc.). Caller owns encoding (base64). Each `Attachment` carries `media_type: str` and `data: str` (base64-encoded content). |
 
 Returns raw `str`. Raises `KonnektError` on failure. Caller owns all Pydantic validation.
 
@@ -64,10 +66,11 @@ On `kre8 init` and every subsequent startup, konnekt runs a **probe** — valida
 - Makes a lightweight connectivity check per provider (cheapest possible call)
 - Writes `konnekt/resolved_models.yaml` with verified providers, model strings, and probe timestamp
 - Hard-fails `kre8 init` if any configured provider fails probe
-- On startup (post-init): warns and continues with degraded capability if a provider is unreachable
+- On startup (post-init): if a provider is unreachable, all roles assigned to that provider cannot proceed. kre8 hard-fails with a clear "unable to proceed" message identifying the affected role(s). User must reassign each affected role to a validated working model in `kre8.yaml` and re-run.
 - Manual re-probe: `kre8 probe` — re-fetches keys, re-probes all providers, rewrites manifest. Use after key rotation or adding a new provider.
 
 > ⚠️ **TODO (code):** `probe.py` does not exist yet. `models.py` has no resolved manifest logic. `kre8.yaml` does not exist yet. Tracked in action items.
+> ⚠️ **TODO (code):** Startup hard-fail on unreachable provider — error message must identify affected role(s) and instruct user to reassign in `kre8.yaml`. No degraded-mode fallback.
 
 ```python
 MODEL_REGISTRY = {
@@ -171,4 +174,5 @@ konnekt/
 - `kre8.yaml` — new repo-root user config: GCP SM project ID, per-provider secret names, optional role overrides
 - `kre8 probe` command — manual re-probe + key re-sync trigger
 - Gemini live tests — re-enable when credits restored
+- `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
 - SecretsAdapter — cloud-agnostic vault abstraction (GCP SM / AWS SM / HashiCorp Vault / Azure KV) — post ship-ready
