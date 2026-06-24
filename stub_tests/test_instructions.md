@@ -26,7 +26,7 @@ pytest stub_tests/test_konnekt.py -v
 | File | Tests |
 |------|-------|
 | `test_kit_schema.py` | Kit schema models, IntentType enum, `extract_kit` stub path (konnekt=None) |
-| `test_kanvas_schema.py` | GateVerdict, KruxResource, Krux (instantiation + all 7 validators), Kanvas |
+| `test_kanvas_schema.py` | GateVerdict, KraphResource, Kraph (instantiation + all 7 validators), Kanvas |
 | `test_konnekt.py` | resolve_model role defaults + model_select overrides + error cases, KonnektConfig, KonnektError, secret cache |
 | `test_konnekt_integration.py` | Full chain mock: resolve_model → get_api_key → GCP SM (mocked) → litellm.completion (mocked) |
 | `test_pipeline.py` | — pending full pipeline stub |

@@ -6,7 +6,7 @@
 ## Context
 
 kre8 uses LLMs as reasoning engines at multiple pipeline stages — Kit extraction,
-kick resolution, krux generation, and HCL synthesis. The temptation at every stage
+kick resolution, kraph generation, and HCL synthesis. The temptation at every stage
 is to trust the LLM output directly: pass the raw string downstream, let the model
 write HCL directly, or treat a well-formed response as correct by inspection.
 

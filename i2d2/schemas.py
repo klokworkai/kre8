@@ -1,4 +1,4 @@
-"""All kre8 pipeline schemas — Kit, Krux, Kanvas."""
+"""All kre8 pipeline schemas — Kit, Kraph, Kanvas."""
 
 import re
 import uuid
@@ -89,7 +89,7 @@ class Kit(BaseModel):
     complexity_flags: list[str] = Field(default_factory=list)
 
 
-# ── Krux ─────────────────────────────────────────────────────────────────────
+# ── Kraph ─────────────────────────────────────────────────────────────────────
 
 
 class DependsOnEntry(BaseModel):
@@ -97,18 +97,18 @@ class DependsOnEntry(BaseModel):
     ref: str
 
 
-class KruxInput(BaseModel):
+class KraphInput(BaseModel):
     name: str
     role: str
     required: bool
 
 
-class KruxOutput(BaseModel):
+class KraphOutput(BaseModel):
     name: str
     ref: str
 
 
-class KruxResource(BaseModel):
+class KraphResource(BaseModel):
     id: str
     type: str
     layer: list[str] = Field(min_length=1)
@@ -118,18 +118,18 @@ class KruxResource(BaseModel):
     konfig: dict = Field(default_factory=dict)
 
 
-class Krux(BaseModel):
+class Kraph(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     name: str
     description: str
     region: str = _DEFAULT_REGION
     kraken: bool = False
-    inputs: list[KruxInput] = Field(default_factory=list)
-    outputs: list[KruxOutput] = Field(default_factory=list)
-    resources: list[KruxResource] = Field(min_length=1)
+    inputs: list[KraphInput] = Field(default_factory=list)
+    outputs: list[KraphOutput] = Field(default_factory=list)
+    resources: list[KraphResource] = Field(min_length=1)
 
     @model_validator(mode="after")
-    def validate_krux(self) -> "Krux":
+    def validate_kraph(self) -> "Kraph":
         resource_ids = {r.id for r in self.resources}
         input_names = {i.name for i in self.inputs}
         input_by_name = {i.name: i for i in self.inputs}
@@ -235,7 +235,7 @@ class DesignConflicts(BaseModel):
 
 class Kanvas(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
-    krux: Krux
+    kraph: Kraph
     konfig: dict = Field(default_factory=dict)
     design_conflicts: DesignConflicts
     kraken: bool = False
