@@ -1,5 +1,5 @@
 # konnekt — Component Design
-**Status:** DONE | **Folder:** `konnekt/`
+**Status:** INPROGRESS | **Folder:** `konnekt/`
 
 ---
 
@@ -18,6 +18,7 @@ complete(
     prompt: str,
     config: KonnektConfig,
     model_select: tuple[int, int] | None = None,
+    attachments: list[Attachment] | None = None,
 ) -> str
 ```
 
@@ -28,6 +29,7 @@ complete(
 | `prompt` | `str` | Raw string. Caller owns construction. |
 | `config` | `KonnektConfig` | Pydantic model — temperature, max_tokens, timeout. |
 | `model_select` | `tuple[int, int] \| None` | Optional override: `(family_idx, tier_idx)`. i2d2 uses `(3, 2)` for Opus toggle. |
+| `attachments` | `list[Attachment] \| None` | Optional list of file attachments — any type the caller needs to pass to the LLM (architecture diagrams, PDFs, requirement docs, images, etc.). Caller owns encoding (base64). Each `Attachment` carries `media_type: str` and `data: str` (base64-encoded content). |
 
 Returns raw `str`. Raises `KonnektError` on failure. Caller owns all Pydantic validation.
 
@@ -53,9 +55,22 @@ class KonnektConfig(BaseModel):
 
 ---
 
-## Model Registry
+## Model Registry and Probe
 
-Defined in `konnekt/models.py` — the **only** place in kre8 where model strings appear.
+`MODEL_REGISTRY` in `models.py` is the static capability map — the **only** place in kre8 where model strings appear.
+
+On `kre8 init` and every subsequent startup, konnekt runs a **probe** — validates connectivity to each configured provider and writes a verified model manifest to `konnekt/resolved_models.yaml`. The manifest is the runtime source of truth for which providers and models are available.
+
+**Probe behaviour:**
+- Fetches API keys from GCP SM per `kre8.yaml` config
+- Makes a lightweight connectivity check per provider (cheapest possible call)
+- Writes `konnekt/resolved_models.yaml` with verified providers, model strings, and probe timestamp
+- Hard-fails `kre8 init` if any configured provider fails probe
+- On startup (post-init): if a provider is unreachable, all roles assigned to that provider cannot proceed. kre8 hard-fails with a clear "unable to proceed" message identifying the affected role(s). User must reassign each affected role to a validated working model in `kre8.yaml` and re-run.
+- Manual re-probe: `kre8 probe` — re-fetches keys, re-probes all providers, rewrites manifest. Use after key rotation or adding a new provider.
+
+> ⚠️ **TODO (code):** `probe.py` does not exist yet. `models.py` has no resolved manifest logic. `kre8.yaml` does not exist yet. Tracked in action items.
+> ⚠️ **TODO (code):** Startup hard-fail on unreachable provider — error message must identify affected role(s) and instruct user to reassign in `kre8.yaml`. No degraded-mode fallback.
 
 ```python
 MODEL_REGISTRY = {
@@ -65,28 +80,42 @@ MODEL_REGISTRY = {
     4: {"provider": "deepseek",  "variants": {1: "deepseek-v4-flash",     2: "deepseek-v4-pro"}},
     5: {"provider": "groq",      "variants": {1: "llama-3.1-8b-instant",  2: "llama-3.3-70b-versatile"}},
 }
+```
 
+> Model strings above are as-coded at last review. Authoritative versions are resolved at probe time and written to `konnekt/resolved_models.yaml`.
+
+---
+
+## Role Defaults and User Overrides
+
+kre8 ships with recommended role defaults. Users can override per-role in `kre8.yaml` — including assigning the same model to all roles.
+
+```python
 ROLE_DEFAULTS = {
-    "extractor":      (1, 1),   # gpt-4o-mini
-    "architect":      (3, 1),   # claude-sonnet-4-6
-    "coder":          (4, 1),   # deepseek-v4-flash
-    "self-corrector": (5, 1),   # llama-3.1-8b-instant
+    "extractor":      (1, 1),   # gpt-4o-mini — fast, cheap extraction
+    "architect":      (3, 1),   # claude-sonnet-4-6 — design reasoning
+    "coder":          (4, 1),   # deepseek-v4-flash — HCL synthesis
+    "self-corrector": (5, 1),   # llama-3.1-8b-instant — lightweight correction
 }
 ```
+
+Role overrides in `kre8.yaml`:
+```yaml
+konnekt:
+  role_overrides:
+    architect: [3, 2]     # use claude-opus-4-6 instead
+    coder: [3, 1]         # use claude-sonnet-4-6 for all coding roles
+```
+
+> ⚠️ **TODO (code):** `kre8.yaml` role override loading not yet implemented.
 
 ---
 
 ## Secrets
 
-GCP Secret Manager via ADC. Module-level `_secret_cache` — lazy loaded per provider, cached for process lifetime. `.env` contains `GCP_PROJECT_ID` only.
+GCP Secret Manager via ADC. Secret names and GCP project ID are provided by the user in `kre8.yaml` at repo root — never hardcoded in konnekt. `secrets.py` reads `kre8.yaml` to resolve the project ID and per-provider secret names, then fetches from GCP SM. Module-level `_secret_cache` — lazy loaded per provider, cached for process lifetime.
 
-| Secret name | Provider |
-|-------------|----------|
-| `kre8-konnekt-dev-openai` | openai |
-| `kre8-konnekt-dev-gemini` | gemini |
-| `kre8-konnekt-dev-anthropic` | anthropic |
-| `kre8-konnekt-dev-deepseek` | deepseek |
-| `kre8-konnekt-dev-groq` | groq |
+> ⚠️ **TODO (code):** `secrets.py` currently has `PROVIDER_SECRET_MAP` hardcoded and reads `GCP_PROJECT_ID` from `.env`. Refactor to read both from `kre8.yaml`. Tracked in action items.
 
 ---
 
@@ -122,7 +151,8 @@ konnekt/
   __init__.py     # exports: complete, KonnektConfig, KonnektError, MODEL_REGISTRY, ROLE_DEFAULTS
   konnekt.py      # complete() — main entry point
   models.py       # MODEL_REGISTRY + ROLE_DEFAULTS + resolve_model()
-  secrets.py      # GCP SM fetch + _secret_cache; ADC-only
+  secrets.py      # GCP SM fetch + _secret_cache; reads kre8.yaml for project ID + secret names
+  probe.py        # TODO: provider connectivity probe + resolved_models.yaml writer
   config.py       # KonnektConfig
   errors.py       # KonnektError
   requirements.txt
@@ -137,7 +167,12 @@ konnekt/
 
 ---
 
-## Parked
+## TODO
 
-- SecretsAdapter — cloud-agnostic vault abstraction (GCP SM / AWS SM / HashiCorp Vault / Azure KV). Post ship-ready.
-- Gemini live tests — re-enable when credits restored.
+- `probe.py` — provider connectivity probe, writes `konnekt/resolved_models.yaml` with verified providers + timestamp
+- `secrets.py` — refactor `PROVIDER_SECRET_MAP` and `GCP_PROJECT_ID` to read from `kre8.yaml` instead of hardcoded + `.env`
+- `kre8.yaml` — new repo-root user config: GCP SM project ID, per-provider secret names, optional role overrides
+- `kre8 probe` command — manual re-probe + key re-sync trigger
+- Gemini live tests — re-enable when credits restored
+- `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
+- SecretsAdapter — cloud-agnostic vault abstraction (GCP SM / AWS SM / HashiCorp Vault / Azure KV) — post ship-ready

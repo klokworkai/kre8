@@ -5,14 +5,14 @@
 
 ## Role
 
-konform is the policy gate executor. Stateless judge. It validates kit (kg1) and kanvas (kg2) against klaws policies referenced via kick_id. It never designs. It never writes to persistent stores. It only judges.
+konform is the policy gate executor. Stateless judge. It validates kit (kg1) and kanvas (kg2) against krule_registry policies referenced via kick_id. It never designs. It never writes to persistent stores. It only judges.
 
 ---
 
-## skope vs klaws vs konform
+## skope vs krule_registry vs konform
 
-- **skope** — high-level policy realm. Defines allowed/denied resources, regions, environments. Scopes what a user is permitted to design with.
-- **klaws** — fine-grained policy rules (Rego, LADE model). Governs how allowed resources can be configured.
+- **skope** — named policy boundary. Defines which krules apply to a given team or environment. Behaviour is entirely determined by assigned krules.
+- **krule_registry** — store of atomic policy rules (DEAL model). Governs how resources can be configured.
 - **konform** — stateless gate executor. Validates kit and kanvas against policies referenced by kick_id. Returns verdict only.
 
 ---
@@ -20,51 +20,43 @@ konform is the policy gate executor. Stateless judge. It validates kit (kg1) and
 ## Gate Contract
 
 **kg1 — Kit gate**
-- Invoked by i2d2 post-kit, post-klue (pre-krux)
+- Invoked by i2d2 post-kit, post-kick (pre-kraph)
 - Inputs: `(kit, kick_id)`
-- Output: `{pass: bool, violated_klaws_ids: [...]}`
+- Output: `{pass: bool, violated_krule_ids: [...]}`
 
 **kg2 — Kanvas gate**
 - Invoked by i2d2 post-kanvas, pre-koder
 - Inputs: `(kanvas, kick_id)`
-- Output: `{pass: bool, violated_klaws_ids: [...]}`
+- Output: `{pass: bool, violated_krule_ids: [...]}`
 
-**On denial:** konform returns `violated_klaws_ids` only. Human-readable messages live on klaws policies. kiosk renders messages by looking up violated_klaws_ids in klaws. Raw policy codes never surface to users directly.
+**On denial:** konform returns `violated_krule_ids` only. Human-readable messages live on krule_registry policies. kiosk renders messages by looking up violated IDs in krule_registry. Raw policy codes never surface to users directly.
 
-**DAG and structural validation:** NOT konform's job. i2d2 owns DAG validation as a Pydantic model validator on krux. See ADR-024.
+**DAG and structural validation:** NOT konform's job. i2d2 owns DAG validation as a Pydantic model validator on kraph. See ADR-005.
 
-**Kraken mode:** konform gates run normally regardless of kraken state. When `kraken: true`, i2d2 does not halt on violations — it collects them. konform's pure-judge contract is unchanged. See ADR-038.
+**Kraken mode:** konform gates run normally regardless of kraken state. When `kraken: true`, i2d2 does not halt on violations — it collects them. konform's pure-judge contract is unchanged. (Kraken mechanics are TBD — no ADR yet.)
 
 ---
 
-## LADE Model (klaws policy system)
+## DEAL Model (krule_registry policy system)
 
 | Letter | Meaning | Description |
 |--------|---------|-------------|
-| **L** | Limit | Constrain a resource |
-| **A** | Allow | Explicitly permit a resource or pattern |
-| **D** | Deny | Block a resource or pattern outright |
-| **E** | Exception | Override an Allow/Deny for a specific context |
+| **D** | Deny | Block a resource, service, or attribute outright |
+| **A** | Allow | Explicitly permit a resource or pattern — always paired with a Limit |
 
-Policy definitions live in `klaws/policies/` as Rego files.
-
----
-
-## MCP Candidate
-
-konform is a full MCP candidate — consumer-owned policy bundles, product-specific context schemas. See ADR-011.
+Policy definitions live in `krule_registry/` as structured records.
 
 ---
 
 ## Relevant ADRs
 
-ADR-011 · ADR-020 · ADR-024 · ADR-034 · ADR-036 · ADR-038
+ADR-003 · ADR-004 · ADR-005 · ADR-006
 
 ---
 
-## Parked
+## TODO
 
-- Full design session needed — after klaws design session
+- Full design session needed — after krule_registry design session
 - skope schema design
-- klaws schema design — Rego policy structure, LADE implementation
-- Cost estimation logic in kg2 (ADR-013)
+- krule_registry schema design — DEAL implementation, storage format
+- Cost estimation logic in kg2

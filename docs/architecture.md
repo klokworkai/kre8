@@ -16,20 +16,21 @@ kre8 is not an IaC generator. It is a **decision engine** — it produces struct
 ## Full Pipeline
 
 ```
-NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(kwery) → kanvas → konform(kg2) → koder → HCL
+NLP → Kit → kick → konform(kg1) → kraph → kanvas → konform(kg2) → koder → HCL
 ```
+
+> skout and skan are summoned by i2d2 during kraph generation as needed — not pipeline stages.
 
 ### Stage Breakdown
 
 | Stage | Component(s) | What happens |
 |---|---|---|
 | NLP → Kit | i2d2 + konnekt | Intent extracted into thin signal artifact. Values never normalized. |
-| Kit → kick | klue | kick (Kit Inferred Contextual Klaws) produced — applicable policy IDs resolved from kit + skope. klue checks klues store in klaws before LLM inference. |
-| Kit + kick → kg1 | konform | Kit validated against klaws. Pipeline halts on failure (unless kraken=true). |
-| kg1 → skout + skan | skout, skan | Semantic search over kpedia + cloud infra scan for design aid. |
-| skore + skan findings → krux | i2d2 + konnekt | Resource dependency graph generated. DAG + enum validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. |
-| krux → kanvas | knit + kwery | Provider konfig values resolved. Full infrastructure manifest assembled. |
-| kanvas → kg2 | konform | Kanvas validated against klaws. Violations recorded in design_conflicts[]. |
+| Kit → kick | i2d2 | kick produced — kit_id + resolved krule_registry policy IDs. i2d2 reads krule_registry directly and infers via its own LLM call. Checks katalog for existing matching kick before re-resolving. |
+| Kit + kick → kg1 | konform | Kit + kick validated against krule_registry. Pipeline halts on failure (unless kraken=true). |
+| kg1 → kraph | i2d2 + konnekt | skout and skan optionally summoned for design context. Resource dependency graph generated. DAG validated by Pydantic at construction time. Retry max 2, then design_conflicts[]. Mermaid DSL generated deterministically and written to katalog atomically with kraph. Trail of skout/skan findings recorded in kraph.references. |
+| kraph → kanvas | i2d2 + konnekt | Config values resolved. Full infrastructure manifest assembled directly by i2d2. |
+| kanvas → kg2 | konform | Kanvas validated against krule_registry. Violations recorded in design_conflicts[]. Kanvas always stored in katalog regardless of kg2 outcome. |
 | kanvas → HCL | koder + konnekt | HCL synthesized and written to katalog. |
 
 ---
@@ -38,11 +39,10 @@ NLP → Kit → klue → kick → konform(kg1) → skout+skan → krux → knit(
 
 | Artifact | Description |
 |---|---|
-| **Kit** | Thin. Intent signals extracted as-is from NLP. No normalization. |
-| **kick** | Kit Inferred Contextual Klaws. Live per-run policy ID set produced by klue from kit + skope. |
-| **klues** | The kick store inside klaws. Previously inferred kicks promoted for reuse. Not a pipeline artifact — owned by klaws, read by klue. |
-| **krux** | Resource dependency graph — DAG of KruxResource nodes. |
-| **kanvas** | Thick. Full infrastructure manifest — architecture decisions, resource map, konfig values, design conflicts. Single source of truth for koder. |
+| **Kit** | Thin. Intent signals extracted as-is from NLP. No normalization. Standalone artifact — reusable across skopes. |
+| **kick** | kit_id + resolved krule_registry policy IDs for this run. Produced by i2d2. |
+| **kraph** | Resource dependency graph — DAG of Kraph Resource nodes. Carries references trail of skout/skan findings. Also carries `dsl` — Mermaid DSL generated deterministically at construction time. |
+| **kanvas** | Thick. Full infrastructure manifest — architecture decisions, resource map, konfig values (provider specific), design conflicts. Single source of truth for koder. Always stored in katalog regardless of kg2 outcome. |
 | **HCL** | Synthesized OpenTofu/Terraform-compatible code. |
 
 Full schema definitions → `docs/schemas.md`
@@ -54,17 +54,17 @@ Full schema definitions → `docs/schemas.md`
 1. **LLM is non-authoritative.** Structured JSON only — never directly generates or executes IaC.
 2. **Kit is thin. Kanvas is thick.** Kit = intent signals. Kanvas = full infrastructure manifest.
 3. **Policy gates are mandatory.** Kit and Kanvas must both pass konform/OPA before proceeding.
-4. **Separation of concerns is strict.** Intent extraction, design reasoning, policy enforcement, HCL synthesis are isolated.
+4. **Policy judgment is the one strictly isolated concern.** konform never writes to katalog and never produces or revises a design. i2d2 is the sole design authority and sole katalog writer across intent extraction, kick resolution, kraph generation, and kanvas assembly.
 5. **No premature execution coupling.** Do not wire rendering or execution into design components.
 6. **Flat-root repo structure.** No `packages/`, `apps/`, or nested monorepo wrappers.
 7. **All LLM output must be Pydantic-validated.** No raw LLM strings passed downstream.
-8. **MCP extractability is a first-class design constraint.** Clean, generic I/O contracts. No domain assumptions baked into interfaces. See ADR-010.
+8. **Components expose clean, generic I/O contracts.** No domain-specific assumptions baked into interfaces — every component must be extractable as an MCP tool without rework.
 9. **Kit never normalizes.** Extracted signal values are as-is from NLP. Resolution is a skope-informed i2d2 concern during Kanvas design.
-10. **DAG validation is i2d2's responsibility.** Pydantic model validator on krux at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
+10. **DAG validation is i2d2's responsibility.** Pydantic model validator on kraph at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
 
 ---
 
-## Current Build State (Phase 1 MVP)
+## Current Build State
 
 Only the critical path is being built first — everything else is not started or parked.
 
@@ -85,25 +85,17 @@ klokworkai/kre8
 ├── i2d2/                ← reasoning engine + orchestrator
 ├── konnekt/             ← LLM adapter
 ├── koder/               ← HCL synthesizer (planned)
-│   └── kure/            ← post-koder lint + self-correct (parked)
-├── konform/             ← OPA policy engine wrapper (planned)
-├── klaws/               ← Rego policy definitions + klues store (planned)
-│   └── policies/
-├── skope/               ← environment + workload skope (planned)
+│   └── kure/            ← post-koder lint + self-correct (deferred)
+├── konform/             ← OPA policy engine wrapper (not started)
+├── krule_registry/      ← policy definitions — pure data store (not started)
+├── skope/               ← environment + workload skope (not started)
 ├── kiosk/               ← developer UI (planned)
-├── konsole/             ← admin UI (planned)
+├── konsole/             ← admin UI (not started)
 ├── katalog/             ← artifact store (planned)
-├── klue/                ← kick inference engine (planned)
-├── knit/                ← Kanvas assembler (planned)
-├── kwery/               ← provider value resolver (planned)
-├── skout/               ← semantic search + re-ranking (planned)
-├── skan/                ← cloud infra scanner (parked)
-├── kpedia/              ← RAG knowledge base (planned)
-├── komb/                ← web scraper (planned)
-├── gate/                ← API ingress (parked)
-├── kron/                ← scheduler (planned)
-├── kast/                ← Slack/webhook notifier (planned)
-├── kli/                 ← CLI tool (parked)
+├── skout/               ← semantic search + re-ranking (not started)
+├── skan/                ← cloud infra scanner (not started)
+├── kpedia/              ← RAG knowledge base (not started)
+├── kast/                ← Slack/webhook notifier (not started)
 ├── stub_tests/          ← schema + stub validation
 └── docs/
     ├── architecture.md  ← this file

@@ -7,26 +7,19 @@
 
 | Component | Folder | Role | Needs | Needed by | Status |
 |---|---|---|---|---|---|
-| i2d2 | `i2d2/` | Orchestrator + reasoning engine. Owns Kit extraction, krux generation, DAG validation, all katalog writes. | konnekt, klue, konform, skout, skan, knit, koder | kiosk | INPROGRESS |
-| konnekt | `konnekt/` | LLM adapter — all model calls go through here. Model strings live here only. | external LLMs, GCP SM | i2d2, koder | DONE |
+| i2d2 | `i2d2/` | Orchestrator + reasoning engine. Owns Kit extraction, kick resolution, kraph generation, DAG validation, kanvas assembly, config resolution, all katalog writes. | konnekt, krule_registry, konform, skout, skan, koder | kiosk | INPROGRESS |
+| konnekt | `konnekt/` | LLM adapter — all model calls go through here. Model strings live here only. | external LLMs, GCP SM | i2d2, koder | INPROGRESS |
 | kiosk | `kiosk/` | Developer UI — NLP in, HCL out. | i2d2 | — | TODO |
 | koder | `koder/` | HCL synthesizer. | konnekt, HashiCorp Terraform MCP | i2d2 | TODO |
-| katalog | `katalog/` | Artifact store — kit, kick, krux, kanvas, HCL. Stub at MVP. | — | i2d2, koder, skout | TODO |
-| konform | `konform/` | Stateless policy gate (OPA). Validates kit at kg1, kanvas at kg2. Never writes, never designs. | klaws | i2d2 | NOT STARTED |
-| klaws | `klaws/` | Policy definitions (Rego/LADE) + klues store. | — | konform, klue, kwery | NOT STARTED |
-| skope | `skope/` | Environment + workload context. Scopes what a user is allowed to design with. | — | i2d2, klue, kwery | NOT STARTED |
-| klue | `klue/` | Infers kick (applicable klaws policy IDs) from kit + skope. Checks klues store before LLM inference. | klaws | i2d2 | NOT STARTED |
-| knit | `knit/` | Assembles kanvas from krux — applies konfig values. Deterministic, no LLM. | kwery | i2d2 | NOT STARTED |
-| kwery | `kwery/` | Resolves provider config values scoped by kick + skope. Internal lookup, no LLM. | skope, klaws | knit | NOT STARTED |
-| skout | `skout/` | Semantic search + re-ranking over kpedia. Surfaces similar prior designs pre-krux. | kpedia | i2d2 | NOT STARTED |
-| skan | `skan/` | Cloud infra scanner — reads live cloud state, feeds findings to i2d2. | cloud APIs (Steampipe) | i2d2 | PARKED |
-| kpedia | `kpedia/` | RAG knowledge base — pillars, forums, provider docs, skan findings. pgvector. | — | skout | NOT STARTED |
-| komb | `komb/` | Web scraper — feeds kpedia collections on a schedule. | — | kron | NOT STARTED |
-| kron | `kron/` | Scheduler — triggers komb. | komb | — | NOT STARTED |
+| katalog | `katalog/` | Artifact store — kit, kick, kraph, kanvas, HCL. Stub (in-memory). | — | i2d2, koder, skout | TODO |
+| konform | `konform/` | Stateless policy gate (OPA). Validates kit+kick at kg1, kanvas at kg2. Never writes, never designs. | krule_registry | i2d2 | NOT STARTED |
+| krule_registry | `krule_registry/` | Store of all krule policy objects. A krule is a single atomic policy rule (DEAL model). krules are skope-independent — reusable across skopes. | — | i2d2, konform, skope | NOT STARTED |
+| skope | `skope/` | Named policy boundary. Thin by design — no rules of its own. Behaviour defined entirely by assigned krules. Owns krule assignment sanity check (conflict detection). | krule_registry | i2d2 | NOT STARTED |
+| skout | `skout/` | Semantic search + re-ranking over kpedia. Surfaces similar prior designs pre-kraph. | kpedia | i2d2 | NOT STARTED |
+| skan | `skan/` | Cloud infra scanner — reads live cloud state. Dual call path: direct from kiosk (mermaid.js diagrams) and from i2d2 (design context for MODIFY). | cloud APIs (Steampipe) | i2d2, kiosk | NOT STARTED |
+| kpedia | `kpedia/` | RAG knowledge base — pillars, forums, provider docs, skan findings. pgvector. Owns its own scheduled scraping/ingestion internally. | — | skout | NOT STARTED |
 | kast | `kast/` | Slack/webhook notifier. | external webhooks | i2d2 | NOT STARTED |
-| konsole | `konsole/` | Admin UI — manages skope, klaws config. | skope, klaws | — | NOT STARTED |
-| gate | `gate/` | API ingress (parked — kiosk connects directly for now). | i2d2 | external clients | PARKED |
-| kli | `kli/` | CLI tool (parked). | gate, i2d2 | — | PARKED |
+| konsole | `konsole/` | Admin UI — manages skope, krule_registry config. Owns krule authoring (NLP conversion + structured upload), krule assignment, and conflict surfacing. | skope, krule_registry | — | NOT STARTED |
 
 ---
 
@@ -34,40 +27,40 @@
 
 | Artifact | Produced by | Consumed by | Stored in |
 |---|---|---|---|
-| kit | i2d2 | i2d2, klue, konform | katalog |
-| kick | klue | i2d2, konform | katalog |
-| krux | i2d2 | knit, konform | katalog |
-| kanvas | knit | koder, konform | katalog |
-| skore | skout | i2d2 | kpedia + i2d2 working memory |
-| skan findings | skan | i2d2 | TBD |
+| kit | i2d2 | i2d2, konform | katalog |
+| kick | i2d2 | i2d2, konform | katalog |
+| kraph | i2d2 | i2d2 | katalog |
+| kanvas | i2d2 | koder, konform | katalog |
+| skan findings | skan | i2d2 | kpedia |
 | HCL | koder | — | katalog |
 
-> **klues** — the kick store inside klaws. Previously inferred kicks promoted for reuse. Not a pipeline artifact — owned by klaws, read by klue.
-
-> **kick** — Kit Inferred Contextual Klaws. Live per-run artifact produced by klue. Contains the set of applicable klaws policy IDs for this kit + skope combination.
+> **kick** — kit_id + resolved krule_registry policy IDs for this run. Produced by i2d2 directly (reads krule_registry as data, infers via its own LLM call). i2d2 checks katalog for an existing matching kick before re-resolving.
 
 ---
 
-## Parked
+## Deferred (TODO — not current build frame)
 
 | Item | Folder | Notes |
 |---|---|---|
-| gate | `gate/` | API ingress — kiosk connects directly for now |
-| kli | `kli/` | CLI tool — not prioritized |
-| kure | `koder/kure/` | Post-koder HCL lint + self-correct loop — parked until koder is built |
-| skore | `skout/skore/` | skout re-ranked results artifact — park until skout is designed |
-| skan | `skan/` | Cloud scanner — dedicated design session needed |
-| klue learning loop | `klue/` | Successful LLM-fallback kicks promoted into klaws.klues — post-MVP |
-| kraken mechanics | `i2d2/` | kraken_report, kill switches, drift handling — post-MVP |
-| pause_for_review | `i2d2/` | Pipeline suspension + resume loop — post-MVP |
-| kombine/konverge | — | Krux composition feature — post-MVP |
-| SecretsAdapter | `konnekt/` | Cloud-agnostic vault abstraction — post ship-ready |
+| kure | `koder/kure/` | Post-koder HCL lint + self-correct loop — build after koder is done |
+| kraken mechanics | `i2d2/` | kraken_report, kill switches, drift handling — TBD |
+| pause_for_review | `i2d2/` | Pipeline suspension + resume loop — TBD |
+| SecretsAdapter | `konnekt/` | Cloud-agnostic vault abstraction — TBD |
+
+---
+
+## Parked (undecided — may or may not be implemented)
+
+| Item | Folder | Notes |
+|---|---|---|
+| gate | `gate/` | API ingress — kiosk connects directly for now; unclear if a separate ingress layer is needed |
+| kli | `kli/` | CLI tool — raw API calls sufficient for now; value unclear vs kiosk |
 
 ---
 
 ## Naming Conventions
 
-- All component names start with **k** (exception: `gate`)
+- All component names start with **k**
 - Folder names use component name directly — no `kre8-` prefix inside mono-repo
 - Python imports use folder name: `from konnekt.router import ...`
 - The umlaut (klökwork) is **visual/brand only** — all code, CLI, domains use `klokwork`
