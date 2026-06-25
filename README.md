@@ -109,6 +109,7 @@ krules are assigned to **skopes** — named policy boundaries. The same Kit can 
 Apache 2.0
 
 ---
+<sub>cool poster. feel free to print as many!</sub>
 <p align="center">
   <img src="./kre8-logo.png"/>
 </p>
