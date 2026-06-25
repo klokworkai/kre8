@@ -7,7 +7,7 @@
 #   - Extract signal values verbatim — no normalization
 #   - inferred: true only when the signal was not explicitly stated
 #   - source_span: the exact substring from raw_input that produced the signal, or null
-#   - intent: one of PROVISION | MODIFY | DESTROY | QUERY
+#   - intent: one of PROVISION | MODIFY
 
 Extract structured infrastructure intent from the following user input and return a valid Kit JSON object.
 
