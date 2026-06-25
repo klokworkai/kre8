@@ -102,6 +102,13 @@ krules are assigned to **skopes** — named policy boundaries. The same Kit can 
 
 **GitHub:** [klokworkai/kre8](https://github.com/klokworkai/kre8)
 
+---
+
+## License
+
+Apache 2.0
+
+---
 <p align="center">
-  <img src="./kre8-logo.png" height="80"/>
+  <img src="./kre8-logo.png"/>
 </p>
