@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Klokwork AI Inc.
+
 from konnekt.config import KonnektConfig
 from konnekt.errors import KonnektError
 from konnekt.konnekt import complete

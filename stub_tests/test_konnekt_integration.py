@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Klokwork AI Inc.
+
 """
 Mock integration tests for konnekt.complete().
 
