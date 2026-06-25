@@ -1,8 +1,9 @@
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY . .
-
-RUN pip install fastapi uvicorn pydantic pyyaml
-
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+# Docker packaging is not implemented yet.
+#
+# kre8 runs locally for now. Container support will be added once the pipeline
+# reaches a stable, shippable state. Key dependencies to resolve before then:
+#   - Filesystem MCP access for all connected models
+#   - Attachment/file passing from disk through the pipeline
+#   - Secrets injection pattern for containerised environments
+#
+# See .env.example for local dev setup.

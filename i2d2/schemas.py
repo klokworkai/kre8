@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Klokwork AI Inc.
+
 """All kre8 pipeline schemas — Kit, Kraph, Kanvas."""
 
 import re

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Klokwork AI Inc.
+
 from i2d2.schemas import (
     ExclusionSignal,
     IntentType,

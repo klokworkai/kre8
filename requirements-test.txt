@@ -1,0 +1,11 @@
+# Test dependencies only — not for running kre8.
+# kre8 is not yet a runnable or installable tool.
+# These are the minimum packages required to execute stub_tests/.
+pydantic>=2.0
+pyyaml
+litellm
+google-cloud-secret-manager
+python-dotenv
+fastapi>=0.115
+pytest
+pytest-asyncio

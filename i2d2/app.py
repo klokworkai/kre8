@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Klokwork AI Inc.
+
 import konnekt as konnekt_module
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
