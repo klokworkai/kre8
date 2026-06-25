@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Stub tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run stub tests
+        run: pytest stub_tests/ -v
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      # Integration tests require real GCP credentials and LLM access.
+      # They are not run in CI — see stub_tests/test_instructions.md.

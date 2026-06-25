@@ -66,14 +66,24 @@ Common types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`. Examples:
 ```bash
 git clone https://github.com/klokworkai/kre8.git
 cd kre8
-pip install -r requirements.txt
+pip install -r requirements-test.txt
 ```
 
-Tests:
+Run stub tests (no credentials or network required):
 ```bash
-pytest stub_tests/
-pytest integration_tests/
+pytest stub_tests/ -v
 ```
+
+Integration tests require real GCP credentials and live LLM access — see `stub_tests/test_instructions.md` before running them:
+```bash
+pytest integration_tests/ -m integration
+```
+
+## CI
+
+CI runs `pytest stub_tests/` on every push and PR to `main`, across Python 3.11 and 3.12. Integration tests are excluded — they require credentials not available in the CI environment.
+
+Code style enforcement (ruff/black) is not configured yet. A formatting and lint config will be added before the first stable release. Until then, follow the style of the surrounding code.
 
 ## Licensing
 
