@@ -175,4 +175,5 @@ konnekt/
 - `kre8 probe` command — manual re-probe + key re-sync trigger
 - Gemini live tests — re-enable when credits restored
 - `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
+- Tool/MCP-calling support — pass tool defs into `litellm.completion`, handle `tool_calls`, loop; needed for koder's Terraform MCP access
 - SecretsAdapter — cloud-agnostic vault abstraction (GCP SM / AWS SM / HashiCorp Vault / Azure KV) — post ship-ready

@@ -18,7 +18,6 @@
 | skout | `skout/` | Semantic search + re-ranking over kpedia. Surfaces similar prior designs pre-kraph. | kpedia | i2d2 | NOT STARTED |
 | skan | `skan/` | Cloud infra scanner — reads live cloud state. Dual call path: direct from kiosk (mermaid.js diagrams) and from i2d2 (design context for MODIFY). | cloud APIs (Steampipe) | i2d2, kiosk | NOT STARTED |
 | kpedia | `kpedia/` | RAG knowledge base — pillars, forums, provider docs, skan findings. pgvector. Owns its own scheduled scraping/ingestion internally. | — | skout | NOT STARTED |
-| kast | `kast/` | Slack/webhook notifier. | external webhooks | i2d2 | NOT STARTED |
 | konsole | `konsole/` | Admin UI — manages skope, krule_registry config. Owns krule authoring (NLP conversion + structured upload), krule assignment, and conflict surfacing. | skope, krule_registry | — | NOT STARTED |
 
 ---
@@ -55,6 +54,7 @@
 |---|---|---|
 | gate | `gate/` | API ingress — kiosk connects directly for now; unclear if a separate ingress layer is needed |
 | kli | `kli/` | CLI tool — raw API calls sufficient for now; value unclear vs kiosk |
+| kast | `kast/` | Slack/webhook notifier — not core to the design loop |
 
 ---
 
