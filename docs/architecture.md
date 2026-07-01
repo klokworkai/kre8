@@ -55,12 +55,13 @@ Full schema definitions → `docs/schemas.md`
 2. **Kit is thin. Kanvas is thick.** Kit = intent signals. Kanvas = full infrastructure manifest.
 3. **Policy gates are mandatory.** Kit and Kanvas must both pass konform/OPA before proceeding.
 4. **Policy judgment is the one strictly isolated concern.** konform never writes to katalog and never produces or revises a design. i2d2 is the sole design authority and sole katalog writer across intent extraction, kick resolution, kraph generation, and kanvas assembly.
-5. **No premature execution coupling.** Do not wire rendering or execution into design components.
-6. **Flat-root repo structure.** No `packages/`, `apps/`, or nested monorepo wrappers.
-7. **All LLM output must be Pydantic-validated.** No raw LLM strings passed downstream.
-8. **Components expose clean, generic I/O contracts.** No domain-specific assumptions baked into interfaces — every component must be extractable as an MCP tool without rework.
-9. **Kit never normalizes.** Extracted signal values are as-is from NLP. Resolution is a skope-informed i2d2 concern during Kanvas design.
-10. **DAG validation is i2d2's responsibility.** Pydantic model validator on kraph at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
+5. **konform is a pure stateless judge.** Never writes to katalog, never owns structural validation.
+6. **No premature execution coupling.** Do not wire rendering or execution into design components.
+7. **Flat-root repo structure.** No `packages/`, `apps/`, or nested monorepo wrappers.
+8. **All LLM output must be Pydantic-validated.** No raw LLM strings passed downstream.
+9. **Components expose clean, generic I/O contracts.** No domain-specific assumptions baked into interfaces — every component must be extractable as an MCP tool without rework.
+10. **Kit never normalizes.** Extracted signal values are as-is from NLP. Resolution is a skope-informed i2d2 concern during Kanvas design.
+11. **DAG validation is i2d2's responsibility.** Pydantic model validator on kraph at construction time. i2d2 retry loop max 2, beyond that → design_conflicts[]. konform does not own structural validation.
 
 ---
 
