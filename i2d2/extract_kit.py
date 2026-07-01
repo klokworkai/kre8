@@ -4,7 +4,7 @@
 import json
 import os
 
-from .schemas import Kit, KitSignal, IntentType
+from .schemas import IntentType, Kit, KitSignal
 
 
 def extract_kit(raw_input: str, konnekt) -> Kit:
@@ -22,6 +22,7 @@ def extract_kit(raw_input: str, konnekt) -> Kit:
     prompt = prompt_template.replace("{{raw_input}}", raw_input)
 
     from konnekt.config import KonnektConfig
+
     response = konnekt.complete(
         role="extractor",
         task="extract",

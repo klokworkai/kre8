@@ -24,3 +24,5 @@ venv/
 
 # session driver — local only, never commit
 CLAUDE.md
+ruff-check.log
+ruff-format.log

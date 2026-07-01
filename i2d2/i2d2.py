@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Klokwork AI Inc.
 
-import os
-import yaml
 
-from .schemas import Kit
 from .extract_kit import extract_kit
 
 

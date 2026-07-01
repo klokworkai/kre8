@@ -2,6 +2,7 @@
 # Copyright 2026 Klokwork AI Inc.
 
 import pytest
+
 from i2d2.schemas import (
     DependsOnEntry,
     DesignConflicts,
@@ -9,10 +10,8 @@ from i2d2.schemas import (
     Kanvas,
     Kraph,
     KraphInput,
-    KraphOutput,
     KraphResource,
 )
-
 
 # --- helpers ---
 
@@ -129,12 +128,16 @@ def test_kraph_invalid_layer_rejected():
 
 def test_kraph_invalid_type_format_rejected():
     with pytest.raises(Exception, match="must match"):
-        Kraph(name="x", description="x", resources=[_make_resource(type="ComputeLambda")])
+        Kraph(
+            name="x", description="x", resources=[_make_resource(type="ComputeLambda")]
+        )
 
 
 def test_kraph_unresolved_local_ref_rejected():
     dep = DependsOnEntry(role="nw:vpc", ref="nonexistent")
-    r = _make_resource(id="app", type="compute:lambda_function", layer=["app"], depends_on=[dep])
+    r = _make_resource(
+        id="app", type="compute:lambda_function", layer=["app"], depends_on=[dep]
+    )
     with pytest.raises(Exception, match="does not resolve"):
         Kraph(name="x", description="x", resources=[r])
 
@@ -142,7 +145,9 @@ def test_kraph_unresolved_local_ref_rejected():
 def test_kraph_dep_on_non_foundation_rejected():
     app1 = _make_resource(id="app1", type="compute:lambda_function", layer=["app"])
     dep = DependsOnEntry(role="compute:lambda_function", ref="app1")
-    app2 = _make_resource(id="app2", type="compute:lambda_function", layer=["app"], depends_on=[dep])
+    app2 = _make_resource(
+        id="app2", type="compute:lambda_function", layer=["app"], depends_on=[dep]
+    )
     with pytest.raises(Exception, match="not a foundation-layer resource"):
         Kraph(name="x", description="x", resources=[app1, app2])
 
@@ -150,7 +155,9 @@ def test_kraph_dep_on_non_foundation_rejected():
 def test_kraph_role_type_mismatch_rejected():
     vpc = _make_resource(id="main_vpc", type="nw:vpc", layer=["foundation"])
     dep = DependsOnEntry(role="sec:security_group", ref="main_vpc")
-    app = _make_resource(id="app", type="compute:lambda_function", layer=["app"], depends_on=[dep])
+    app = _make_resource(
+        id="app", type="compute:lambda_function", layer=["app"], depends_on=[dep]
+    )
     with pytest.raises(Exception, match="does not match"):
         Kraph(name="x", description="x", resources=[vpc, app])
 
