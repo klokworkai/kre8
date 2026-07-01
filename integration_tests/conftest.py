@@ -6,7 +6,8 @@ import pytest
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
-        "integration: requires GCP_PROJECT_ID + valid ADC credentials + real LLM access",
+        "integration: requires GCP_PROJECT_ID + valid ADC credentials + "
+        "real LLM access",
     )
 
 

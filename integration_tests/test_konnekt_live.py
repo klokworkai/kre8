@@ -11,10 +11,12 @@ What this tests:
 Requirements:
   - GCP_PROJECT_ID env var set
   - Valid ADC credentials: run `gcloud auth application-default login` once locally
-  - Docker / AWS ECS / GKE: GOOGLE_APPLICATION_CREDENTIALS pointing to WIF credential config
+  - Docker / AWS ECS / GKE: GOOGLE_APPLICATION_CREDENTIALS pointing to WIF
+    credential config
 
 Run:
-  GCP_PROJECT_ID=kre8-dev pytest integration_tests/test_konnekt_live.py -m integration -v
+  GCP_PROJECT_ID=kre8-dev pytest integration_tests/test_konnekt_live.py -m
+  integration -v
 """
 
 import pytest

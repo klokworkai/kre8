@@ -28,7 +28,10 @@ def complete(
 
         logger.info(
             "konnekt | role=%s task=%s model=%s select=%s",
-            role, task, litellm_model, model_select,
+            role,
+            task,
+            litellm_model,
+            model_select,
         )
 
         response = litellm.completion(
@@ -47,9 +50,15 @@ def complete(
             # but we still need to extract the field correctly.
             content = getattr(message, "reasoning_content", None) or ""
             if content:
-                logger.debug("konnekt | content empty, fell back to reasoning_content | model=%s", litellm_model)
+                logger.debug(
+                    "konnekt | content empty, fell back to "
+                    "reasoning_content | model=%s",
+                    litellm_model,
+                )
         return content
     except KonnektError:
         raise
     except Exception as e:
-        raise KonnektError(provider=provider, model=litellm_model, task=task, message=str(e))
+        raise KonnektError(
+            provider=provider, model=litellm_model, task=task, message=str(e)
+        )
