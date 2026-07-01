@@ -10,8 +10,8 @@ from konnekt.errors import KonnektError
 from konnekt.models import MODEL_REGISTRY, ROLE_DEFAULTS, resolve_model
 from konnekt.secrets import _secret_cache, get_secret
 
-
 # --- resolve_model: role defaults ---
+
 
 def test_resolve_model_role_extractor():
     provider, model = resolve_model("extractor")
@@ -38,6 +38,7 @@ def test_resolve_model_role_self_corrector():
 
 
 # --- resolve_model: model_select overrides ---
+
 
 def test_resolve_model_select_gemini_flash():
     provider, model = resolve_model("architect", model_select=(2, 1))
@@ -71,6 +72,7 @@ def test_resolve_model_select_groq_versatile():
 
 # --- resolve_model: error cases ---
 
+
 def test_resolve_model_unknown_role_raises():
     with pytest.raises(KonnektError) as exc_info:
         resolve_model("unknown-role")
@@ -91,6 +93,7 @@ def test_resolve_model_invalid_tier_raises():
 
 # --- MODEL_REGISTRY and ROLE_DEFAULTS structure ---
 
+
 def test_all_role_defaults_are_valid():
     for role, (family, tier) in ROLE_DEFAULTS.items():
         provider, model = resolve_model(role)
@@ -104,6 +107,7 @@ def test_registry_covers_all_five_families():
 
 # --- KonnektConfig ---
 
+
 def test_konnekt_config_defaults():
     config = KonnektConfig()
     assert config.temperature == 0.2
@@ -113,17 +117,24 @@ def test_konnekt_config_defaults():
 
 # --- KonnektError ---
 
+
 def test_konnekt_error_str_format():
-    err = KonnektError(provider="anthropic", model="claude-sonnet-4-6", task="think", message="timeout")
+    err = KonnektError(
+        provider="anthropic", model="claude-sonnet-4-6", task="think", message="timeout"
+    )
     assert str(err) == "[konnekt] anthropic/claude-sonnet-4-6 (think): timeout"
 
 
 # --- get_secret: cache hit ---
 
+
 def test_get_secret_cache_hit_skips_gcp():
     _secret_cache["TEST_CACHED_KEY"] = "cached-value"
 
-    with patch("konnekt.secrets.os.environ.get", side_effect=AssertionError("cache miss — os.environ.get called")):
+    with patch(
+        "konnekt.secrets.os.environ.get",
+        side_effect=AssertionError("cache miss — os.environ.get called"),
+    ):
         result = get_secret("TEST_CACHED_KEY")
 
     assert result == "cached-value"

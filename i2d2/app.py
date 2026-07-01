@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Klokwork AI Inc.
 
-import konnekt as konnekt_module
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+import konnekt as konnekt_module
 from konnekt.errors import KonnektError
+
 from .i2d2 import process_intent
 
 app = FastAPI(title="i2d2", version="0.1.0", description="kre8 reasoning engine")

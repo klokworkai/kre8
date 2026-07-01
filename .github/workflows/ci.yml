@@ -24,6 +24,11 @@ jobs:
       - name: Install test dependencies
         run: pip install -r requirements-test.txt
 
+      - name: Lint with ruff
+        run: |
+          ruff check .
+          ruff format --check .
+
       - name: Run stub tests
         run: pytest stub_tests/ -v
         env:

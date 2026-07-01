@@ -152,39 +152,46 @@ class Kraph(BaseModel):
             # 2. layer values in valid set
             bad_layers = [lyr for lyr in r.layer if lyr not in _VALID_LAYERS]
             if bad_layers:
-                raise ValueError(f"resource '{r.id}' has invalid layer values: {bad_layers}")
+                raise ValueError(
+                    f"resource '{r.id}' has invalid layer values: {bad_layers}"
+                )
 
             # 3. type matches <namespace>:<resource_type>
             if not _TYPE_RE.match(r.type):
                 raise ValueError(
-                    f"resource '{r.id}' type '{r.type}' must match <namespace>:<resource_type>"
+                    f"resource '{r.id}' type '{r.type}' must match "
+                    "<namespace>:<resource_type>"
                 )
 
             for dep in r.depends_on:
                 if dep.ref.startswith("$inputs."):
-                    input_name = dep.ref[len("$inputs."):]
+                    input_name = dep.ref[len("$inputs.") :]
                     # 4. $inputs ref resolves to a declared input
                     if input_name not in input_names:
                         raise ValueError(
-                            f"resource '{r.id}' dep ref '{dep.ref}' does not resolve to a declared input"
+                            f"resource '{r.id}' dep ref '{dep.ref}' does not "
+                            "resolve to a declared input"
                         )
                     # 6. role consistency for $inputs refs
                     if input_by_name[input_name].role != dep.role:
                         raise ValueError(
                             f"resource '{r.id}' dep role '{dep.role}' does not match "
-                            f"input '{input_name}' role '{input_by_name[input_name].role}'"
+                            f"input '{input_name}' role "
+                            f"'{input_by_name[input_name].role}'"
                         )
                 else:
                     # 4. local ref resolves to a resource id
                     if dep.ref not in resource_ids:
                         raise ValueError(
-                            f"resource '{r.id}' dep ref '{dep.ref}' does not resolve to a local resource id"
+                            f"resource '{r.id}' dep ref '{dep.ref}' does not "
+                            "resolve to a local resource id"
                         )
                     target = resource_by_id[dep.ref]
                     # 5. local dep target must include foundation layer
                     if "foundation" not in target.layer:
                         raise ValueError(
-                            f"resource '{r.id}' depends on '{dep.ref}' which is not a foundation-layer resource"
+                            f"resource '{r.id}' depends on '{dep.ref}' which is "
+                            "not a foundation-layer resource"
                         )
                     # 6. role consistency for local refs
                     if target.type != dep.role:
@@ -195,7 +202,7 @@ class Kraph(BaseModel):
 
         # 9. required inputs must be referenced by at least one resource
         all_input_refs = {
-            dep.ref[len("$inputs."):]
+            dep.ref[len("$inputs.") :]
             for r in self.resources
             for dep in r.depends_on
             if dep.ref.startswith("$inputs.")

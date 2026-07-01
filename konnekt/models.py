@@ -15,8 +15,8 @@ MODEL_REGISTRY: dict[int, dict] = {
     2: {
         "provider": "gemini",
         "variants": {
-            1: "gemini-flash-latest",   # → gemini-3.1-flash-preview
-            2: "gemini-pro-latest",     # → gemini-3.1-pro-preview
+            1: "gemini-flash-latest",  # → gemini-3.1-flash-preview
+            2: "gemini-pro-latest",  # → gemini-3.1-pro-preview
         },
     },
     3: {
@@ -44,14 +44,16 @@ MODEL_REGISTRY: dict[int, dict] = {
 
 # role → (family, tier) default
 ROLE_DEFAULTS: dict[str, tuple[int, int]] = {
-    "extractor":      (1, 1),
-    "architect":      (3, 1),
-    "coder":          (4, 1),
+    "extractor": (1, 1),
+    "architect": (3, 1),
+    "coder": (4, 1),
     "self-corrector": (5, 1),
 }
 
 
-def resolve_model(role: str, model_select: tuple[int, int] | None = None) -> tuple[str, str]:
+def resolve_model(
+    role: str, model_select: tuple[int, int] | None = None
+) -> tuple[str, str]:
     """Return (provider, litellm_model_string) for a role, with optional override."""
     if model_select is not None:
         family_idx, tier_idx = model_select
@@ -59,7 +61,9 @@ def resolve_model(role: str, model_select: tuple[int, int] | None = None) -> tup
     else:
         if role not in ROLE_DEFAULTS:
             raise KonnektError(
-                provider="konnekt", model=role, task="resolve_model",
+                provider="konnekt",
+                model=role,
+                task="resolve_model",
                 message=f"Unknown role '{role}' — not in ROLE_DEFAULTS",
             )
         family_idx, tier_idx = ROLE_DEFAULTS[role]
@@ -67,7 +71,9 @@ def resolve_model(role: str, model_select: tuple[int, int] | None = None) -> tup
 
     if family_idx not in MODEL_REGISTRY:
         raise KonnektError(
-            provider="konnekt", model=source, task="resolve_model",
+            provider="konnekt",
+            model=source,
+            task="resolve_model",
             message=f"Unknown family index {family_idx} — not in MODEL_REGISTRY",
         )
 
@@ -75,8 +81,13 @@ def resolve_model(role: str, model_select: tuple[int, int] | None = None) -> tup
 
     if tier_idx not in family["variants"]:
         raise KonnektError(
-            provider="konnekt", model=source, task="resolve_model",
-            message=f"Unknown tier {tier_idx} for family {family_idx} ({family['provider']})",
+            provider="konnekt",
+            model=source,
+            task="resolve_model",
+            message=(
+                f"Unknown tier {tier_idx} for family {family_idx} "
+                f"({family['provider']})"
+            ),
         )
 
     provider = family["provider"]

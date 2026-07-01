@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Klokwork AI Inc.
 
+from i2d2.extract_kit import extract_kit
 from i2d2.schemas import (
     ExclusionSignal,
     IntentType,
@@ -10,10 +11,9 @@ from i2d2.schemas import (
     SizeSignal,
     TemporalSignal,
 )
-from i2d2.extract_kit import extract_kit
-
 
 # --- signal models ---
+
 
 def test_kit_signal_defaults():
     s = KitSignal(value="ec2", source_span=None)
@@ -46,6 +46,7 @@ def test_exclusion_signal():
 
 # --- IntentType enum ---
 
+
 def test_intent_type_values():
     assert IntentType.PROVISION == "PROVISION"
     assert IntentType.MODIFY == "MODIFY"
@@ -54,6 +55,7 @@ def test_intent_type_values():
 
 
 # --- Kit model ---
+
 
 def test_kit_auto_request_id():
     k1 = Kit(raw_input="deploy an api", intent=IntentType.PROVISION)
@@ -83,11 +85,13 @@ def test_kit_model_validate():
 
 def test_kit_missing_required_fields():
     import pytest
+
     with pytest.raises(Exception):
         Kit.model_validate({"raw_input": "oops"})  # missing intent
 
 
 # --- extract_kit stub ---
+
 
 def test_extract_kit_stub_no_konnekt():
     k = extract_kit("deploy a postgres database", konnekt=None)

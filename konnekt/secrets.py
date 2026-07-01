@@ -12,11 +12,11 @@ load_dotenv()  # picks up GCP_PROJECT_ID only — no API keys in .env
 _secret_cache: dict[str, str] = {}
 
 PROVIDER_SECRET_MAP: dict[str, str] = {
-    "openai":    "kre8-konnekt-dev-openai",
-    "gemini":    "kre8-konnekt-dev-gemini",
+    "openai": "kre8-konnekt-dev-openai",
+    "gemini": "kre8-konnekt-dev-gemini",
     "anthropic": "kre8-konnekt-dev-anthropic",
-    "deepseek":  "kre8-konnekt-dev-deepseek",
-    "groq":      "kre8-konnekt-dev-groq",
+    "deepseek": "kre8-konnekt-dev-deepseek",
+    "groq": "kre8-konnekt-dev-groq",
 }
 
 
@@ -25,6 +25,7 @@ def get_secret(name: str) -> str:
         return _secret_cache[name]
     try:
         from google.cloud import secretmanager
+
         project_id = os.environ["GCP_PROJECT_ID"]
         client = secretmanager.SecretManagerServiceClient()
         path = f"projects/{project_id}/secrets/{name}/versions/latest"
@@ -36,7 +37,9 @@ def get_secret(name: str) -> str:
         raise
     except Exception as e:
         raise KonnektError(
-            provider="secrets", model="", task="get_secret",
+            provider="secrets",
+            model="",
+            task="get_secret",
             message=f"GCP Secret Manager fetch failed for '{name}': {e}",
         )
 
@@ -45,7 +48,9 @@ def get_api_key(provider: str) -> str:
     secret_name = PROVIDER_SECRET_MAP.get(provider)
     if not secret_name:
         raise KonnektError(
-            provider=provider, model="", task="get_api_key",
+            provider=provider,
+            model="",
+            task="get_api_key",
             message=f"No secret mapping for provider '{provider}'",
         )
     return get_secret(secret_name)

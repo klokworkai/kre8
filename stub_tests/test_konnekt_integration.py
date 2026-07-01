@@ -10,12 +10,13 @@ These tests exercise the full call chain end-to-end:
 No real credentials or LLM calls are made. Replace mock targets with real
 calls once WIF is configured and a runtime identity is available.
 """
+
 from unittest.mock import MagicMock, patch
 
 import google.cloud.secretmanager
 import pytest
 
-from konnekt import complete, KonnektConfig
+from konnekt import KonnektConfig, complete
 from konnekt.errors import KonnektError
 
 
@@ -44,26 +45,31 @@ def _patch_gcp(secret_values: dict[str, str]):
 
 # --- full chain: default role models ---
 
-@pytest.mark.parametrize("role,expected_model", [
-    ("extractor",      "openai/gpt-4o-mini"),
-    ("architect",      "anthropic/claude-sonnet-4-6"),
-    ("coder",          "deepseek/deepseek-v4-flash"),
-    ("self-corrector", "groq/llama-3.1-8b-instant"),
-])
+
+@pytest.mark.parametrize(
+    "role,expected_model",
+    [
+        ("extractor", "openai/gpt-4o-mini"),
+        ("architect", "anthropic/claude-sonnet-4-6"),
+        ("coder", "deepseek/deepseek-v4-flash"),
+        ("self-corrector", "groq/llama-3.1-8b-instant"),
+    ],
+)
 def test_complete_default_roles(role, expected_model, monkeypatch):
     monkeypatch.setenv("GCP_PROJECT_ID", "kre8-dev")
     monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/fake/wif-config.json")
 
     secret_map = {
-        "kre8-konnekt-dev-openai":    "sk-openai-fake",
+        "kre8-konnekt-dev-openai": "sk-openai-fake",
         "kre8-konnekt-dev-anthropic": "sk-anthropic-fake",
-        "kre8-konnekt-dev-deepseek":  "sk-deepseek-fake",
-        "kre8-konnekt-dev-groq":      "sk-groq-fake",
+        "kre8-konnekt-dev-deepseek": "sk-deepseek-fake",
+        "kre8-konnekt-dev-groq": "sk-groq-fake",
     }
     mock_client = _patch_gcp(secret_map)
 
     # clear cache between tests
     from konnekt.secrets import _secret_cache
+
     _secret_cache.clear()
 
     captured = {}
@@ -73,9 +79,15 @@ def test_complete_default_roles(role, expected_model, monkeypatch):
         captured["api_key"] = kwargs["api_key"]
         return _make_litellm_response("PONG")
 
-    with patch.object(google.cloud.secretmanager, "SecretManagerServiceClient", return_value=mock_client):
+    with patch.object(
+        google.cloud.secretmanager,
+        "SecretManagerServiceClient",
+        return_value=mock_client,
+    ):
         with patch("litellm.completion", side_effect=fake_completion):
-            result = complete(role, "smoke-test", "Reply PONG.", KonnektConfig(max_tokens=10))
+            result = complete(
+                role, "smoke-test", "Reply PONG.", KonnektConfig(max_tokens=10)
+            )
 
     assert result == "PONG"
     assert captured["model"] == expected_model
@@ -83,10 +95,12 @@ def test_complete_default_roles(role, expected_model, monkeypatch):
 
 # --- model_select override ---
 
+
 def test_complete_model_select_gemini_flash(monkeypatch):
     monkeypatch.setenv("GCP_PROJECT_ID", "kre8-dev")
 
     from konnekt.secrets import _secret_cache
+
     _secret_cache.clear()
 
     secret_map = {"kre8-konnekt-dev-gemini": "gemini-fake-key"}
@@ -98,11 +112,18 @@ def test_complete_model_select_gemini_flash(monkeypatch):
         captured["model"] = kwargs["model"]
         return _make_litellm_response("PONG")
 
-    with patch.object(google.cloud.secretmanager, "SecretManagerServiceClient", return_value=mock_client):
+    with patch.object(
+        google.cloud.secretmanager,
+        "SecretManagerServiceClient",
+        return_value=mock_client,
+    ):
         with patch("litellm.completion", side_effect=fake_completion):
             result = complete(
-                "architect", "think", "Reply PONG.",
-                KonnektConfig(), model_select=(2, 1),
+                "architect",
+                "think",
+                "Reply PONG.",
+                KonnektConfig(),
+                model_select=(2, 1),
             )
 
     assert result == "PONG"
@@ -113,6 +134,7 @@ def test_complete_model_select_claude_opus(monkeypatch):
     monkeypatch.setenv("GCP_PROJECT_ID", "kre8-dev")
 
     from konnekt.secrets import _secret_cache
+
     _secret_cache.clear()
 
     secret_map = {"kre8-konnekt-dev-anthropic": "sk-anthropic-fake"}
@@ -124,11 +146,18 @@ def test_complete_model_select_claude_opus(monkeypatch):
         captured["model"] = kwargs["model"]
         return _make_litellm_response("PONG")
 
-    with patch.object(google.cloud.secretmanager, "SecretManagerServiceClient", return_value=mock_client):
+    with patch.object(
+        google.cloud.secretmanager,
+        "SecretManagerServiceClient",
+        return_value=mock_client,
+    ):
         with patch("litellm.completion", side_effect=fake_completion):
             result = complete(
-                "architect", "think", "Reply PONG.",
-                KonnektConfig(), model_select=(3, 2),
+                "architect",
+                "think",
+                "Reply PONG.",
+                KonnektConfig(),
+                model_select=(3, 2),
             )
 
     assert result == "PONG"
@@ -137,16 +166,22 @@ def test_complete_model_select_claude_opus(monkeypatch):
 
 # --- GCP SM failure → KonnektError ---
 
+
 def test_complete_gcp_secret_fetch_failure_raises(monkeypatch):
     monkeypatch.setenv("GCP_PROJECT_ID", "kre8-dev")
 
     from konnekt.secrets import _secret_cache
+
     _secret_cache.clear()
 
     mock_client = MagicMock()
     mock_client.access_secret_version.side_effect = Exception("GCP SM unreachable")
 
-    with patch.object(google.cloud.secretmanager, "SecretManagerServiceClient", return_value=mock_client):
+    with patch.object(
+        google.cloud.secretmanager,
+        "SecretManagerServiceClient",
+        return_value=mock_client,
+    ):
         with pytest.raises(KonnektError) as exc_info:
             complete("extractor", "extract", "test", KonnektConfig())
 
@@ -156,16 +191,22 @@ def test_complete_gcp_secret_fetch_failure_raises(monkeypatch):
 
 # --- LiteLLM failure → KonnektError ---
 
+
 def test_complete_litellm_failure_raises(monkeypatch):
     monkeypatch.setenv("GCP_PROJECT_ID", "kre8-dev")
 
     from konnekt.secrets import _secret_cache
+
     _secret_cache.clear()
 
     secret_map = {"kre8-konnekt-dev-openai": "sk-openai-fake"}
     mock_client = _patch_gcp(secret_map)
 
-    with patch.object(google.cloud.secretmanager, "SecretManagerServiceClient", return_value=mock_client):
+    with patch.object(
+        google.cloud.secretmanager,
+        "SecretManagerServiceClient",
+        return_value=mock_client,
+    ):
         with patch("litellm.completion", side_effect=Exception("provider timeout")):
             with pytest.raises(KonnektError) as exc_info:
                 complete("extractor", "extract", "test", KonnektConfig())
@@ -178,10 +219,12 @@ def test_complete_litellm_failure_raises(monkeypatch):
 
 # --- config values passed through to litellm ---
 
+
 def test_complete_passes_config_to_litellm(monkeypatch):
     monkeypatch.setenv("GCP_PROJECT_ID", "kre8-dev")
 
     from konnekt.secrets import _secret_cache
+
     _secret_cache.clear()
 
     secret_map = {"kre8-konnekt-dev-openai": "sk-openai-fake"}
@@ -195,7 +238,11 @@ def test_complete_passes_config_to_litellm(monkeypatch):
 
     config = KonnektConfig(temperature=0.9, max_tokens=500, timeout=45)
 
-    with patch.object(google.cloud.secretmanager, "SecretManagerServiceClient", return_value=mock_client):
+    with patch.object(
+        google.cloud.secretmanager,
+        "SecretManagerServiceClient",
+        return_value=mock_client,
+    ):
         with patch("litellm.completion", side_effect=fake_completion):
             complete("extractor", "extract", "test", config)
 
