@@ -109,6 +109,12 @@ class KraphOutput(BaseModel):
     ref: str
 
 
+class TrailEntry(BaseModel):
+    source: str  # "skout" | "skan"
+    ref: str  # artifact or result ID surfaced
+    summary: str  # one-line description of what was found
+
+
 class KraphResource(BaseModel):
     id: str
     type: str
@@ -128,6 +134,8 @@ class Kraph(BaseModel):
     inputs: list[KraphInput] = Field(default_factory=list)
     outputs: list[KraphOutput] = Field(default_factory=list)
     resources: list[KraphResource] = Field(min_length=1)
+    references: list[TrailEntry] = Field(default_factory=list)
+    dsl: str = ""
 
     @model_validator(mode="after")
     def validate_kraph(self) -> "Kraph":
