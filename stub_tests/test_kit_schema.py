@@ -50,17 +50,15 @@ def test_exclusion_signal():
 def test_intent_type_values():
     assert IntentType.PROVISION == "PROVISION"
     assert IntentType.MODIFY == "MODIFY"
-    assert IntentType.DESTROY == "DESTROY"
-    assert IntentType.QUERY == "QUERY"
 
 
 # --- Kit model ---
 
 
-def test_kit_auto_request_id():
+def test_kit_auto_kit_id():
     k1 = Kit(raw_input="deploy an api", intent=IntentType.PROVISION)
     k2 = Kit(raw_input="deploy an api", intent=IntentType.PROVISION)
-    assert k1.request_id != k2.request_id
+    assert k1.kit_id != k2.kit_id
 
 
 def test_kit_default_empty_lists():
@@ -98,4 +96,4 @@ def test_extract_kit_stub_no_konnekt():
     assert k.raw_input == "deploy a postgres database"
     assert k.intent == "PROVISION"
     assert k.app_type[0].value == "stub"
-    assert k.request_id is not None
+    assert k.kit_id is not None

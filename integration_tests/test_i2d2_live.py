@@ -51,7 +51,7 @@ def test_process_returns_valid_kit_fields():
     response = client.post("/process", json={"input": "provision a web app on AWS"})
     assert response.status_code == 200
     kit = response.json()
-    assert "request_id" in kit
+    assert "kit_id" in kit
     assert "raw_input" in kit
     assert "intent" in kit
     assert kit["raw_input"] == "provision a web app on AWS"
@@ -61,23 +61,6 @@ def test_process_intent_is_provision():
     response = client.post("/process", json={"input": "deploy a new postgres database"})
     assert response.status_code == 200
     assert response.json()["intent"] == "PROVISION"
-
-
-def test_process_intent_is_destroy():
-    response = client.post(
-        "/process", json={"input": "tear down the staging environment"}
-    )
-    assert response.status_code == 200
-    assert response.json()["intent"] == "DESTROY"
-
-
-def test_process_intent_is_query():
-    response = client.post(
-        "/process",
-        json={"input": "what is the current state of the production cluster"},
-    )
-    assert response.status_code == 200
-    assert response.json()["intent"] == "QUERY"
 
 
 # --- /process: signal extraction ---

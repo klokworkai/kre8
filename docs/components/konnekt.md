@@ -69,8 +69,7 @@ On `kre8 init` and every subsequent startup, konnekt runs a **probe** — valida
 - On startup (post-init): if a provider is unreachable, all roles assigned to that provider cannot proceed. kre8 hard-fails with a clear "unable to proceed" message identifying the affected role(s). User must reassign each affected role to a validated working model in `kre8.yaml` and re-run.
 - Manual re-probe: `kre8 probe` — re-fetches keys, re-probes all providers, rewrites manifest. Use after key rotation or adding a new provider.
 
-> ⚠️ **TODO (code):** `probe.py` does not exist yet. `models.py` has no resolved manifest logic. `kre8.yaml` does not exist yet. Tracked in action items.
-> ⚠️ **TODO (code):** Startup hard-fail on unreachable provider — error message must identify affected role(s) and instruct user to reassign in `kre8.yaml`. No degraded-mode fallback.
+> `probe.py` implemented. `kre8.yaml` implemented. Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles and instructs reassignment in `kre8.yaml`.
 
 ```python
 MODEL_REGISTRY = {
@@ -107,7 +106,7 @@ konnekt:
     coder: [3, 1]         # use claude-sonnet-4-6 for all coding roles
 ```
 
-> ⚠️ **TODO (code):** `kre8.yaml` role override loading not yet implemented.
+> ⚠️ **TODO (code):** `kre8.yaml` role override loading not yet implemented — `ROLE_DEFAULTS` still used exclusively.
 
 ---
 
@@ -115,7 +114,9 @@ konnekt:
 
 GCP Secret Manager via ADC. Secret names and GCP project ID are provided by the user in `kre8.yaml` at repo root — never hardcoded in konnekt. `secrets.py` reads `kre8.yaml` to resolve the project ID and per-provider secret names, then fetches from GCP SM. Module-level `_secret_cache` — lazy loaded per provider, cached for process lifetime.
 
-> ⚠️ **TODO (code):** `secrets.py` currently has `PROVIDER_SECRET_MAP` hardcoded and reads `GCP_PROJECT_ID` from `.env`. Refactor to read both from `kre8.yaml`. Tracked in action items.
+> `secrets.py` refactored — reads `gcp.project_id` and `konnekt.secrets` from `kre8.yaml`. Hardcoded map and `.env` dependency removed.
+>
+> **Note:** `kre8.yaml` currently supports GCP Secret Manager only. The `gcp` top-level key will expand to a vault-agnostic structure (AWS SM, HashiCorp Vault, Azure KV) when SecretsAdapter lands post-ship.
 
 ---
 
@@ -169,10 +170,8 @@ konnekt/
 
 ## TODO
 
-- `probe.py` — provider connectivity probe, writes `konnekt/resolved_models.yaml` with verified providers + timestamp
-- `secrets.py` — refactor `PROVIDER_SECRET_MAP` and `GCP_PROJECT_ID` to read from `kre8.yaml` instead of hardcoded + `.env`
-- `kre8.yaml` — new repo-root user config: GCP SM project ID, per-provider secret names, optional role overrides
-- `kre8 probe` command — manual re-probe + key re-sync trigger
+- `kre8.yaml` role override loading — wire `konnekt.role_overrides` into `resolve_model()`
+- `kre8 probe` command — CLI entry point for manual re-probe + key re-sync
 - Gemini live tests — re-enable when credits restored
 - `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
 - Tool/MCP-calling support — pass tool defs into `litellm.completion`, handle `tool_calls`, loop; needed for koder's Terraform MCP access

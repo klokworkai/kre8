@@ -21,8 +21,11 @@ venv/
 
 # secrets
 .env
+kre8.yaml
+konnekt/resolved_models.yaml
 
 # session driver — local only, never commit
 CLAUDE.md
 ruff-check.log
 ruff-format.log
+coderabbit.log

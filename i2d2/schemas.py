@@ -8,6 +8,7 @@ import uuid
 from enum import Enum
 from graphlib import CycleError, TopologicalSorter
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field, model_validator
@@ -65,14 +66,12 @@ class ExclusionSignal(BaseModel):
 class IntentType(str, Enum):
     PROVISION = "PROVISION"
     MODIFY = "MODIFY"
-    DESTROY = "DESTROY"
-    QUERY = "QUERY"
 
 
 class Kit(BaseModel):
     model_config = {"use_enum_values": True}
 
-    request_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    kit_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     raw_input: str
     intent: IntentType
     kraken: bool = False
@@ -111,6 +110,12 @@ class KraphOutput(BaseModel):
     ref: str
 
 
+class TrailEntry(BaseModel):
+    source: Literal["skout", "skan"]
+    ref: str
+    summary: str
+
+
 class KraphResource(BaseModel):
     id: str
     type: str
@@ -130,6 +135,8 @@ class Kraph(BaseModel):
     inputs: list[KraphInput] = Field(default_factory=list)
     outputs: list[KraphOutput] = Field(default_factory=list)
     resources: list[KraphResource] = Field(min_length=1)
+    references: list[TrailEntry] = Field(default_factory=list)
+    dsl: str = ""
 
     @model_validator(mode="after")
     def validate_kraph(self) -> "Kraph":
