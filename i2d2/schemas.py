@@ -65,8 +65,6 @@ class ExclusionSignal(BaseModel):
 class IntentType(str, Enum):
     PROVISION = "PROVISION"
     MODIFY = "MODIFY"
-    DESTROY = "DESTROY"
-    QUERY = "QUERY"
 
 
 class Kit(BaseModel):

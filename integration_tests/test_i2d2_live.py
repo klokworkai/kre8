@@ -63,23 +63,6 @@ def test_process_intent_is_provision():
     assert response.json()["intent"] == "PROVISION"
 
 
-def test_process_intent_is_destroy():
-    response = client.post(
-        "/process", json={"input": "tear down the staging environment"}
-    )
-    assert response.status_code == 200
-    assert response.json()["intent"] == "DESTROY"
-
-
-def test_process_intent_is_query():
-    response = client.post(
-        "/process",
-        json={"input": "what is the current state of the production cluster"},
-    )
-    assert response.status_code == 200
-    assert response.json()["intent"] == "QUERY"
-
-
 # --- /process: signal extraction ---
 
 

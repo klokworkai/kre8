@@ -50,8 +50,6 @@ def test_exclusion_signal():
 def test_intent_type_values():
     assert IntentType.PROVISION == "PROVISION"
     assert IntentType.MODIFY == "MODIFY"
-    assert IntentType.DESTROY == "DESTROY"
-    assert IntentType.QUERY == "QUERY"
 
 
 # --- Kit model ---
