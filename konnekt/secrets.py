@@ -37,7 +37,7 @@ def _load_kre8_config() -> dict:
 
 def _get_provider_secret_map() -> dict[str, str]:
     config = _load_kre8_config()
-    secrets = config.get("konnekt", {}).get("secrets", {})
+    secrets = (config.get("konnekt") or {}).get("secrets") or {}
     if not secrets:
         raise KonnektError(
             provider="secrets",
@@ -50,7 +50,7 @@ def _get_provider_secret_map() -> dict[str, str]:
 
 def _get_gcp_project_id() -> str:
     config = _load_kre8_config()
-    project_id = config.get("gcp", {}).get("project_id")
+    project_id = (config.get("gcp") or {}).get("project_id")
     if not project_id:
         raise KonnektError(
             provider="secrets",

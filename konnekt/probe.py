@@ -38,10 +38,9 @@ def probe_all() -> None:
 
     for family_idx, family in MODEL_REGISTRY.items():
         provider = family["provider"]
-        litellm_model = f"{provider}/{family['variants'][1]}"
-        logger.info("probe | provider=%s model=%s", provider, litellm_model)
-
         try:
+            litellm_model = f"{provider}/{family['variants'][1]}"
+            logger.info("probe | provider=%s model=%s", provider, litellm_model)
             api_key = get_api_key(provider)
             probe_provider(provider, api_key, litellm_model)
             results[provider] = {"status": "ok", "model": litellm_model}
@@ -49,7 +48,7 @@ def probe_all() -> None:
         except Exception as e:
             results[provider] = {
                 "status": "failed",
-                "model": litellm_model,
+                "model": locals().get("litellm_model", "<unresolved>"),
                 "error": str(e),
             }
             failed.append(provider)
