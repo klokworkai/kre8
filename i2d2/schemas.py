@@ -8,6 +8,7 @@ import uuid
 from enum import Enum
 from graphlib import CycleError, TopologicalSorter
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field, model_validator
@@ -110,9 +111,9 @@ class KraphOutput(BaseModel):
 
 
 class TrailEntry(BaseModel):
-    source: str  # "skout" | "skan"
-    ref: str  # artifact or result ID surfaced
-    summary: str  # one-line description of what was found
+    source: Literal["skout", "skan"]
+    ref: str
+    summary: str
 
 
 class KraphResource(BaseModel):

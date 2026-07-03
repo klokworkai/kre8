@@ -9,20 +9,19 @@ What this tests:
   - model_select override reaches the correct provider
 
 Requirements:
-  - GCP_PROJECT_ID env var set
+  - kre8.yaml present at repo root with gcp.project_id + konnekt.secrets configured
   - Valid ADC credentials: run `gcloud auth application-default login` once locally
   - Docker / AWS ECS / GKE: GOOGLE_APPLICATION_CREDENTIALS pointing to WIF
     credential config
 
 Run:
-  GCP_PROJECT_ID=kre8-dev pytest integration_tests/test_konnekt_live.py -m
-  integration -v
+  pytest integration_tests/test_konnekt_live.py -m integration -v
 """
 
 import pytest
 
 from konnekt import KonnektConfig, complete
-from konnekt.secrets import PROVIDER_SECRET_MAP, _secret_cache, get_secret
+from konnekt.secrets import _get_provider_secret_map, _secret_cache, get_secret
 
 pytestmark = pytest.mark.integration
 
@@ -41,7 +40,7 @@ def clear_cache():
     "provider", ["openai", "anthropic", "deepseek", "groq", "gemini"]
 )
 def test_secret_retrieval(provider):
-    secret_name = PROVIDER_SECRET_MAP[provider]
+    secret_name = _get_provider_secret_map()[provider]
     key = get_secret(secret_name)
     assert key and len(key) > 10, (
         f"Expected a real API key for {provider}, got: {key!r}"
@@ -49,13 +48,13 @@ def test_secret_retrieval(provider):
 
 
 def test_secret_cache_populated_after_fetch():
-    secret_name = PROVIDER_SECRET_MAP["openai"]
+    secret_name = _get_provider_secret_map()["openai"]
     get_secret(secret_name)
     assert secret_name in _secret_cache
 
 
 def test_secret_cache_hit_does_not_refetch():
-    secret_name = PROVIDER_SECRET_MAP["openai"]
+    secret_name = _get_provider_secret_map()["openai"]
     get_secret(secret_name)
     cached_value = _secret_cache[secret_name]
     # second call should return same value from cache

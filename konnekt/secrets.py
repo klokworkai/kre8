@@ -15,7 +15,7 @@ _KRE8_CONFIG_PATH = Path(__file__).parent.parent / "kre8.yaml"
 def _load_kre8_config() -> dict:
     try:
         with open(_KRE8_CONFIG_PATH) as f:
-            return yaml.safe_load(f)
+            return yaml.safe_load(f) or {}
     except FileNotFoundError:
         raise KonnektError(
             provider="secrets",
