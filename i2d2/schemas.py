@@ -70,7 +70,7 @@ class IntentType(str, Enum):
 class Kit(BaseModel):
     model_config = {"use_enum_values": True}
 
-    request_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    kit_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     raw_input: str
     intent: IntentType
     kraken: bool = False

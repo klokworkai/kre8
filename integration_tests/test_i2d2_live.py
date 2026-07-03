@@ -51,7 +51,7 @@ def test_process_returns_valid_kit_fields():
     response = client.post("/process", json={"input": "provision a web app on AWS"})
     assert response.status_code == 200
     kit = response.json()
-    assert "request_id" in kit
+    assert "kit_id" in kit
     assert "raw_input" in kit
     assert "intent" in kit
     assert kit["raw_input"] == "provision a web app on AWS"
