@@ -132,8 +132,8 @@ def test_get_secret_cache_hit_skips_gcp():
     _secret_cache["TEST_CACHED_KEY"] = "cached-value"
 
     with patch(
-        "konnekt.secrets.os.environ.get",
-        side_effect=AssertionError("cache miss — os.environ.get called"),
+        "konnekt.secrets._load_kre8_config",
+        side_effect=AssertionError("cache miss — _load_kre8_config called"),
     ):
         result = get_secret("TEST_CACHED_KEY")
 
@@ -145,7 +145,14 @@ def test_get_secret_not_found_raises():
     key = "NONEXISTENT_KEY_XYZ"
     _secret_cache.pop(key, None)
 
-    with patch("konnekt.secrets.os.environ.get", return_value=None):
+    with (
+        patch("konnekt.secrets._get_gcp_project_id", return_value="fake-project"),
+        patch("google.cloud.secretmanager", create=True) as mock_sm,
+    ):
+        client = mock_sm.SecretManagerServiceClient.return_value
+        client.access_secret_version.side_effect = Exception(
+            f"secret '{key}' not found"
+        )
         with pytest.raises(KonnektError) as exc_info:
             get_secret(key)
 

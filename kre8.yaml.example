@@ -1,0 +1,16 @@
+# kre8.yaml — repo-root user config
+# Copy to kre8.yaml and fill in your values. Never commit kre8.yaml.
+
+gcp:
+  project_id: my-gcp-project
+
+konnekt:
+  secrets:
+    openai: kre8-konnekt-dev-openai
+    gemini: kre8-konnekt-dev-gemini
+    anthropic: kre8-konnekt-dev-anthropic
+    deepseek: kre8-konnekt-dev-deepseek
+    groq: kre8-konnekt-dev-groq
+  role_overrides:       # optional — omit to use built-in ROLE_DEFAULTS
+    # architect: [3, 2]   # e.g. use claude-opus-4-6 instead of sonnet
+    # coder: [3, 1]
