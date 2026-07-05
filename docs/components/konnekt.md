@@ -59,17 +59,20 @@ class KonnektConfig(BaseModel):
 
 `MODEL_REGISTRY` in `models.py` is the static capability map — the **only** place in kre8 where model strings appear.
 
-On `kre8 init` and every subsequent startup, konnekt runs a **probe** — validates connectivity to each configured provider and writes a verified model manifest to `konnekt/resolved_models.yaml`. The manifest is the runtime source of truth for which providers and models are available.
+kiosk calls konnekt's init/probe on every launch — not an interim measure, kiosk always initializes konnekt before anything else runs. This replaces the earlier `kre8 init` / `kre8 probe` CLI framing: kli is not being built as a terminal UX (see `docs/components.md` — Parked), so kiosk is the sole caller of konnekt init/re-init. See ADR-008 and `docs/components/kiosk.md` for why kiosk reaches konnekt by direct import rather than through i2d2.
+
+The probe validates connectivity to each configured provider and writes a verified model manifest to `konnekt/resolved_models.yaml`. The manifest is the runtime source of truth for which providers and models are available.
 
 **Probe behaviour:**
 - Fetches API keys from GCP SM per `kre8.yaml` config
 - Makes a lightweight connectivity check per provider (cheapest possible call)
 - Writes `konnekt/resolved_models.yaml` with verified providers, model strings, and probe timestamp
-- Hard-fails `kre8 init` if any configured provider fails probe
-- On startup (post-init): if a provider is unreachable, all roles assigned to that provider cannot proceed. kre8 hard-fails with a clear "unable to proceed" message identifying the affected role(s). User must reassign each affected role to a validated working model in `kre8.yaml` and re-run.
-- Manual re-probe: `kre8 probe` — re-fetches keys, re-probes all providers, rewrites manifest. Use after key rotation or adding a new provider.
+- Hard-fails kiosk's launch if any configured provider fails probe
+- If a provider is unreachable, all roles assigned to that provider cannot proceed. konnekt raises a clear "unable to proceed" error identifying the affected role(s). User must reassign each affected role to a validated working model in `kre8.yaml` and re-run init.
+- Manual re-init: triggered from kiosk, always available, not gated behind any other app state. Use after key rotation, `kre8.yaml` edits, or a transient failure.
+- Failure categorization: kiosk surfaces init/probe failures as one of three categories — connectivity (provider unreachable), no credentials configured (missing secret mapping in `kre8.yaml`), or invalid credentials (provider rejected the key). Not yet implemented — `probe_all()` currently raises with a raw per-provider error string only; see TODO.
 
-> `probe.py` implemented. `kre8.yaml` implemented. Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles and instructs reassignment in `kre8.yaml`.
+> `probe.py` implemented. `kre8.yaml` implemented. Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles and instructs reassignment in `kre8.yaml`. Failure categorization for kiosk display is not yet implemented.
 
 ```python
 MODEL_REGISTRY = {
@@ -171,7 +174,7 @@ konnekt/
 ## TODO
 
 - `kre8.yaml` role override loading — wire `konnekt.role_overrides` into `resolve_model()`
-- `kre8 probe` command — CLI entry point for manual re-probe + key re-sync
+- Categorize `probe_all()` failures into connectivity / no-creds / invalid-creds so kiosk can display them distinctly (see ADR-008, `docs/components/kiosk.md`) — manual re-init is now kiosk's job, not a CLI command
 - Gemini live tests — re-enable when credits restored
 - `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
 - Tool/MCP-calling support — pass tool defs into `litellm.completion`, handle `tool_calls`, loop; needed for koder's Terraform MCP access

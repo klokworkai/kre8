@@ -70,11 +70,12 @@ Full schema definitions → `docs/schemas.md`
 Only the critical path is being built first — everything else is not started or parked.
 
 ```
-kiosk       (TODO)
-  → i2d2    (INPROGRESS — FastAPI live, Kit extraction wired, koder not yet called)
-    → konnekt   (DONE — full LLM adapter)
-    → katalog   (TODO — stub in-memory)
-  → koder   (TODO)
+kiosk         (TODO)
+  → i2d2       (INPROGRESS — FastAPI live, Kit extraction wired, koder not yet called)
+    → konnekt     (DONE — full LLM adapter)
+    → katalog     (TODO — stub in-memory)
+    → koder       (TODO)
+  → konnekt    (DONE — init/re-init only, direct import, bypasses i2d2 — see ADR-008)
 ```
 
 ---

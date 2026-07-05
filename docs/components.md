@@ -8,8 +8,8 @@
 | Component | Folder | Role | Needs | Needed by | Status |
 |---|---|---|---|---|---|
 | i2d2 | `i2d2/` | Orchestrator + reasoning engine. Owns Kit extraction, kick resolution, kraph generation, DAG validation, kanvas assembly, config resolution, all katalog writes. | konnekt, krule_registry, konform, skout, skan, koder | kiosk | INPROGRESS |
-| konnekt | `konnekt/` | LLM adapter — all model calls go through here. Model strings live here only. | external LLMs, GCP SM | i2d2, koder | INPROGRESS |
-| kiosk | `kiosk/` | Developer UI — NLP in, HCL out. | i2d2 | — | TODO |
+| konnekt | `konnekt/` | LLM adapter — all model calls go through here. Model strings live here only. Also owns init/probe lifecycle — called directly by kiosk on every launch (see ADR-008). | external LLMs, GCP SM | i2d2, koder, kiosk | INPROGRESS |
+| kiosk | `kiosk/` | Developer UI — NLP in, HCL out. Always initializes konnekt on launch (hard stop + categorized error on failure); manual re-init available anytime. | i2d2, konnekt | — | TODO |
 | koder | `koder/` | HCL synthesizer. | konnekt, HashiCorp Terraform MCP | i2d2 | TODO |
 | katalog | `katalog/` | Artifact store — kit, kick, kraph, kanvas, HCL. Stub (in-memory). | — | i2d2, koder, skout | TODO |
 | konform | `konform/` | Stateless policy gate (OPA). Validates kit+kick at kg1, kanvas at kg2. Never writes, never designs. | krule_registry | i2d2 | NOT STARTED |
@@ -53,7 +53,7 @@
 | Item | Folder | Notes |
 |---|---|---|
 | gate | `gate/` | API ingress — kiosk connects directly for now; unclear if a separate ingress layer is needed |
-| kli | `kli/` | CLI tool — raw API calls sufficient for now; value unclear vs kiosk |
+| kli | `kli/` | CLI tool — not being built as a terminal UX. May resurface later as a headless API-mode client for i2d2 (CI/automation use), distinct from kiosk's human-exploratory UX. |
 | kast | `kast/` | Slack/webhook notifier — not core to the design loop |
 
 ---

@@ -78,6 +78,7 @@ Conflict detection is skope's responsibility. konsole is the surface that presen
 
 ## TODO
 
+- Secrets provider management — konsole is the intended eventual home for managing multiple secret providers and their config (beyond the current GCP SM-only `kre8.yaml` flow konnekt owns today). kiosk explicitly does not do this (see ADR-008, `docs/components/kiosk.md`). Design deferred until konsole's own session.
 - Full design session — after krule_registry and skope design sessions
 - krule struct template — define format for structured upload path
 - NLP conversion — prompt design, output validation, edit UX
