@@ -34,3 +34,4 @@ Archived files are in `_archived/` for git history continuity.
 | ADR-005 | DAG validation is owned by i2d2, not konform |
 | ADR-006 | Kanvas is always stored — gate result travels with it |
 | ADR-007 | Kit never normalizes — signal values extracted as-is |
+| ADR-008 | kiosk depends on konnekt directly for init/re-init — i2d2 is not a universal proxy |
