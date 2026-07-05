@@ -25,11 +25,11 @@ exists at any given time.
   no partial launch.
 - **Categorized init failure** — failures are surfaced as one of three
   categories, not a raw exception string:
-  - connectivity (provider unreachable)
-  - no credentials configured (missing secret mapping in `kre8.yaml`)
-  - invalid credentials (provider rejected the key)
+  - NO_CREDS (no credentials defined for the provider in `secrets.yaml`)
+  - INVALID_SECRET_STORE (`secrets.yaml` has project + secret name configured, but the GCP Secret Manager call fails)
+  - INVALID_API_KEYS (key retrieved fine, but the model provider rejected it)
 - **Manual re-init** — always available, not gated behind any other app
-  state. Used after key rotation, `kre8.yaml` edits, or a transient failure.
+  state. Used after key rotation, `secrets.yaml` edits, or a transient failure.
 - **Dummy run** — accepts NL input, `POST`s to i2d2 `/process`, displays the
   returned Kit. Displays a static notice that kick/kraph/kanvas/koder are not
   yet implemented. One request, one response — no polling, no retry loop.
@@ -38,7 +38,7 @@ exists at any given time.
 
 ## Explicitly out of scope (v0)
 
-- **Secrets editing, in any form.** konnekt's `kre8.yaml` + GCP Secret Manager
+- **Secrets editing, in any form.** konnekt's `secrets.yaml` + GCP Secret Manager
   flow is untouched and out of kiosk's reach entirely — edited outside kiosk,
   by whoever runs it. konsole is the only planned future home for secrets
   provider management (see `docs/components/konsole.md`).
@@ -88,9 +88,10 @@ Parked).
 
 **Design:**
 - Map konnekt/GCP SM exception types precisely into the three init-failure
-  categories (connectivity / no-creds / invalid-creds) — `probe_all()`
-  currently raises with a raw per-provider error string; categorization logic
-  doesn't exist yet.
+  categories (NO_CREDS / INVALID_SECRET_STORE / INVALID_API_KEYS) —
+  `probe_all()` currently raises with a raw per-provider error string;
+  categorization logic doesn't exist yet. See `docs/components/konnekt.md`
+  for the category definitions and the deferred auto-fallback direction.
 - Define the dummy-run UI: input box, Kit display format, static
   "not yet implemented" notice copy.
 

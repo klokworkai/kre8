@@ -64,15 +64,26 @@ kiosk calls konnekt's init/probe on every launch — not an interim measure, kio
 The probe validates connectivity to each configured provider and writes a verified model manifest to `konnekt/resolved_models.yaml`. The manifest is the runtime source of truth for which providers and models are available.
 
 **Probe behaviour:**
-- Fetches API keys from GCP SM per `kre8.yaml` config
+- Fetches API keys from GCP SM per `secrets.yaml` config
 - Makes a lightweight connectivity check per provider (cheapest possible call)
 - Writes `konnekt/resolved_models.yaml` with verified providers, model strings, and probe timestamp
-- Hard-fails kiosk's launch if any configured provider fails probe
-- If a provider is unreachable, all roles assigned to that provider cannot proceed. konnekt raises a clear "unable to proceed" error identifying the affected role(s). User must reassign each affected role to a validated working model in `kre8.yaml` and re-run init.
-- Manual re-init: triggered from kiosk, always available, not gated behind any other app state. Use after key rotation, `kre8.yaml` edits, or a transient failure.
-- Failure categorization: kiosk surfaces init/probe failures as one of three categories — connectivity (provider unreachable), no credentials configured (missing secret mapping in `kre8.yaml`), or invalid credentials (provider rejected the key). Not yet implemented — `probe_all()` currently raises with a raw per-provider error string only; see TODO.
+- Hard-fails kiosk's launch if any configured provider fails probe (current behaviour — see Auto-Fallback direction below for the planned change)
+- If a provider is unreachable, all roles assigned to that provider cannot proceed. konnekt raises a clear "unable to proceed" error identifying the affected role(s). User must reassign each affected role to a validated working model in `secrets.yaml` and re-run init.
+- Manual re-init: triggered from kiosk, always available, not gated behind any other app state. Use after key rotation, `secrets.yaml` edits, or a transient failure.
+- Failure categorization: kiosk surfaces init/probe failures as one of three categories:
+  - **NO_CREDS** — no credentials defined for the provider in `secrets.yaml`
+  - **INVALID_SECRET_STORE** — `secrets.yaml` has the project and secret name configured, but the GCP Secret Manager call for it fails (not-found, unreachable, or any other GCP-side failure)
+  - **INVALID_API_KEYS** — a key was retrieved successfully from GCP SM, but the model provider rejected it
+  
+  Not yet implemented — `probe_all()` currently raises with a raw per-provider error string only; see TODO.
 
-> `probe.py` implemented. `kre8.yaml` implemented. Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles and instructs reassignment in `kre8.yaml`. Failure categorization for kiosk display is not yet implemented.
+> `probe.py` implemented. `secrets.yaml` implemented. Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles and instructs reassignment in `secrets.yaml`. Failure categorization for kiosk display is not yet implemented.
+
+## Auto-Fallback (direction decided, mechanism deferred)
+
+Direction: rather than hard-failing kiosk's launch on any single provider failure, konnekt should auto-fall back to a working key/model when a configured one errors out or is missing entirely, so kiosk can still launch as long as at least one provider is usable. This changes `probe_all()`'s current "any failure is fatal" contract.
+
+Full mechanism (fallback ordering, which roles degrade to which fallback model, how the substitution is surfaced to the user) is deferred to its own design session — not part of the current build frame. This note exists so the direction isn't lost before that session happens.
 
 ```python
 MODEL_REGISTRY = {
@@ -90,7 +101,7 @@ MODEL_REGISTRY = {
 
 ## Role Defaults and User Overrides
 
-kre8 ships with recommended role defaults. Users can override per-role in `kre8.yaml` — including assigning the same model to all roles.
+kre8 ships with recommended role defaults. Users can override per-role in `secrets.yaml` — including assigning the same model to all roles.
 
 ```python
 ROLE_DEFAULTS = {
@@ -101,7 +112,7 @@ ROLE_DEFAULTS = {
 }
 ```
 
-Role overrides in `kre8.yaml`:
+Role overrides in `secrets.yaml`:
 ```yaml
 konnekt:
   role_overrides:
@@ -109,17 +120,17 @@ konnekt:
     coder: [3, 1]         # use claude-sonnet-4-6 for all coding roles
 ```
 
-> ⚠️ **TODO (code):** `kre8.yaml` role override loading not yet implemented — `ROLE_DEFAULTS` still used exclusively.
+> ⚠️ **TODO (code):** `secrets.yaml` role override loading not yet implemented — `ROLE_DEFAULTS` still used exclusively.
 
 ---
 
 ## Secrets
 
-GCP Secret Manager via ADC. Secret names and GCP project ID are provided by the user in `kre8.yaml` at repo root — never hardcoded in konnekt. `secrets.py` reads `kre8.yaml` to resolve the project ID and per-provider secret names, then fetches from GCP SM. Module-level `_secret_cache` — lazy loaded per provider, cached for process lifetime.
+GCP Secret Manager via ADC. Secret names and GCP project ID are provided by the user in `secrets.yaml` at repo root — never hardcoded in konnekt. `secrets.py` reads `secrets.yaml` to resolve the project ID and per-provider secret names, then fetches from GCP SM. Module-level `_secret_cache` — lazy loaded per provider, cached for process lifetime.
 
-> `secrets.py` refactored — reads `gcp.project_id` and `konnekt.secrets` from `kre8.yaml`. Hardcoded map and `.env` dependency removed.
+> `secrets.py` refactored — reads `gcp.project_id` and `konnekt.secrets` from `secrets.yaml`. Hardcoded map and `.env` dependency removed.
 >
-> **Note:** `kre8.yaml` currently supports GCP Secret Manager only. The `gcp` top-level key will expand to a vault-agnostic structure (AWS SM, HashiCorp Vault, Azure KV) when SecretsAdapter lands post-ship.
+> **Note:** `secrets.yaml` currently supports GCP Secret Manager only. The `gcp` top-level key will expand to a vault-agnostic structure (AWS SM, HashiCorp Vault, Azure KV) when SecretsAdapter lands post-ship.
 
 ---
 
@@ -155,7 +166,7 @@ konnekt/
   __init__.py     # exports: complete, KonnektConfig, KonnektError, MODEL_REGISTRY, ROLE_DEFAULTS
   konnekt.py      # complete() — main entry point
   models.py       # MODEL_REGISTRY + ROLE_DEFAULTS + resolve_model()
-  secrets.py      # GCP SM fetch + _secret_cache; reads kre8.yaml for project ID + secret names
+  secrets.py      # GCP SM fetch + _secret_cache; reads secrets.yaml for project ID + secret names
   probe.py        # TODO: provider connectivity probe + resolved_models.yaml writer
   config.py       # KonnektConfig
   errors.py       # KonnektError
@@ -173,8 +184,9 @@ konnekt/
 
 ## TODO
 
-- `kre8.yaml` role override loading — wire `konnekt.role_overrides` into `resolve_model()`
-- Categorize `probe_all()` failures into connectivity / no-creds / invalid-creds so kiosk can display them distinctly (see ADR-008, `docs/components/kiosk.md`) — manual re-init is now kiosk's job, not a CLI command
+- `secrets.yaml` role override loading — wire `konnekt.role_overrides` into `resolve_model()`
+- Rename `kre8.yaml` → `secrets.yaml` repo-wide (config loader, `.gitignore`, `kre8.yaml.example` → `secrets.yaml.example`, all doc references)
+- Categorize `probe_all()` failures into NO_CREDS / INVALID_SECRET_STORE / INVALID_API_KEYS so kiosk can display them distinctly (see `docs/components/kiosk.md`) — manual re-init is now kiosk's job, not a CLI command
 - Gemini live tests — re-enable when credits restored
 - `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
 - Tool/MCP-calling support — pass tool defs into `litellm.completion`, handle `tool_calls`, loop; needed for koder's Terraform MCP access
