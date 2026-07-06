@@ -9,7 +9,7 @@ What this tests:
   - model_select override reaches the correct provider
 
 Requirements:
-  - kre8.yaml present at repo root with gcp.project_id + konnekt.secrets configured
+  - secrets.yaml present at repo root with gcp.project_id + konnekt.secrets configured
   - Valid ADC credentials: run `gcloud auth application-default login` once locally
   - Docker / AWS ECS / GKE: GOOGLE_APPLICATION_CREDENTIALS pointing to WIF
     credential config

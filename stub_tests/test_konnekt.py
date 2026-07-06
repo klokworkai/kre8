@@ -158,3 +158,49 @@ def test_get_secret_not_found_raises():
 
     assert exc_info.value.provider == "secrets"
     assert key in exc_info.value.message
+    assert exc_info.value.category == "invalid_secret_store"
+
+
+# --- KonnektError categories: secrets.py raise sites ---
+
+
+def test_load_kre8_config_missing_file_is_no_creds():
+    from konnekt.secrets import _load_kre8_config
+
+    with patch("konnekt.secrets._SECRETS_CONFIG_PATH", "/nonexistent/secrets.yaml"):
+        with pytest.raises(KonnektError) as exc_info:
+            _load_kre8_config()
+
+    assert exc_info.value.category == "no_creds"
+
+
+def test_get_provider_secret_map_empty_is_no_creds():
+    from konnekt.secrets import _get_provider_secret_map
+
+    fake_config = {"konnekt": {"secrets": {}}}
+    with patch("konnekt.secrets._load_kre8_config", return_value=fake_config):
+        with pytest.raises(KonnektError) as exc_info:
+            _get_provider_secret_map()
+
+    assert exc_info.value.category == "no_creds"
+
+
+def test_get_gcp_project_id_missing_is_no_creds():
+    from konnekt.secrets import _get_gcp_project_id
+
+    with patch("konnekt.secrets._load_kre8_config", return_value={"gcp": {}}):
+        with pytest.raises(KonnektError) as exc_info:
+            _get_gcp_project_id()
+
+    assert exc_info.value.category == "no_creds"
+
+
+def test_get_api_key_missing_mapping_is_no_creds():
+    from konnekt.secrets import get_api_key
+
+    fake_map = {"openai": "some-secret"}
+    with patch("konnekt.secrets._get_provider_secret_map", return_value=fake_map):
+        with pytest.raises(KonnektError) as exc_info:
+            get_api_key("anthropic")
+
+    assert exc_info.value.category == "no_creds"

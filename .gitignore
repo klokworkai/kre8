@@ -21,7 +21,7 @@ venv/
 
 # secrets
 .env
-kre8.yaml
+secrets.yaml
 konnekt/resolved_models.yaml
 
 # session driver — local only, never commit

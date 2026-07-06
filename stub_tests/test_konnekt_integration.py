@@ -59,7 +59,7 @@ def _patch_gcp(secret_values: dict[str, str]):
 
 @contextmanager
 def _patch_config():
-    """Patch _load_kre8_config so tests don't need a real kre8.yaml on disk."""
+    """Patch _load_kre8_config so tests don't need a real secrets.yaml on disk."""
     with patch("konnekt.secrets._load_kre8_config", return_value=_FAKE_CONFIG):
         yield
 

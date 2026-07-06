@@ -9,7 +9,7 @@ kiosk must guarantee konnekt is initialized (probed against all configured
 providers) every time it launches, with a hard stop and a clear, categorized
 error if init fails — not an interim measure, not something users opt into.
 kiosk must also expose a manual re-init, usable at any time, for use after key
-rotation or `kre8.yaml` edits.
+rotation or `secrets.yaml` edits.
 
 konnekt has no HTTP surface of its own. It is a plain Python library —
 `probe.probe_all()`, `konnekt.complete()` — imported directly by whatever
@@ -58,6 +58,6 @@ kiosk therefore has two structurally different edges:
   same direct-import pattern rather than proxying through i2d2.
 - If konnekt is ever split out into its own service — not currently planned —
   this decision needs revisiting, since the direct-import assumption breaks.
-- Secrets themselves remain entirely inside konnekt's existing `kre8.yaml` +
+- Secrets themselves remain entirely inside konnekt's existing `secrets.yaml` +
   GCP Secret Manager flow. kiosk does not read, write, or proxy secrets in any
   form — it only triggers init/re-init and displays the categorized result.

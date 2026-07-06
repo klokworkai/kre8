@@ -35,24 +35,39 @@ def probe_all() -> None:
     """
     results: dict[str, dict] = {}
     failed: list[str] = []
+    failed_categories: dict[str, str] = {}
 
     for family_idx, family in MODEL_REGISTRY.items():
         provider = family["provider"]
+        litellm_model = f"{provider}/{family['variants'][1]}"
+        logger.info("probe | provider=%s model=%s", provider, litellm_model)
+
         try:
-            litellm_model = f"{provider}/{family['variants'][1]}"
-            logger.info("probe | provider=%s model=%s", provider, litellm_model)
             api_key = get_api_key(provider)
+        except KonnektError as e:
+            results[provider] = {
+                "status": "failed",
+                "model": litellm_model,
+                "error": str(e),
+            }
+            failed.append(provider)
+            failed_categories[provider] = e.category or "no_creds"
+            logger.warning("probe | %s FAILED (secrets): %s", provider, e)
+            continue
+
+        try:
             probe_provider(provider, api_key, litellm_model)
             results[provider] = {"status": "ok", "model": litellm_model}
             logger.info("probe | %s ok", provider)
         except Exception as e:
             results[provider] = {
                 "status": "failed",
-                "model": locals().get("litellm_model", "<unresolved>"),
+                "model": litellm_model,
                 "error": str(e),
             }
             failed.append(provider)
-            logger.warning("probe | %s FAILED: %s", provider, e)
+            failed_categories[provider] = "invalid_api_keys"
+            logger.warning("probe | %s FAILED (provider call): %s", provider, e)
 
     manifest = {
         "probed_at": datetime.now(UTC).isoformat(timespec="seconds"),
@@ -67,6 +82,10 @@ def probe_all() -> None:
             for role, (fam_idx, _) in ROLE_DEFAULTS.items()
             if MODEL_REGISTRY[fam_idx]["provider"] in failed
         ]
+        distinct_categories = set(failed_categories.values())
+        summary_category = (
+            next(iter(distinct_categories)) if len(distinct_categories) == 1 else None
+        )
         raise KonnektError(
             provider=", ".join(failed),
             model="",
@@ -74,7 +93,10 @@ def probe_all() -> None:
             message=(
                 f"Providers unreachable: {failed}. "
                 f"Affected roles: {affected_roles}. "
-                "Reassign each affected role in kre8.yaml "
-                "konnekt.role_overrides and re-run."
+                "Reassign each affected role in secrets.yaml "
+                "konnekt.role_overrides and re-run. "
+                f"Per-provider categories: {failed_categories}."
             ),
+            category=summary_category,
+            category_breakdown=failed_categories,
         )

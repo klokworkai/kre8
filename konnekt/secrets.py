@@ -9,12 +9,12 @@ from konnekt.errors import KonnektError
 
 _secret_cache: dict[str, str] = {}
 
-_KRE8_CONFIG_PATH = Path(__file__).parent.parent / "kre8.yaml"
+_SECRETS_CONFIG_PATH = Path(__file__).parent.parent / "secrets.yaml"
 
 
 def _load_kre8_config() -> dict:
     try:
-        with open(_KRE8_CONFIG_PATH) as f:
+        with open(_SECRETS_CONFIG_PATH) as f:
             return yaml.safe_load(f) or {}
     except FileNotFoundError:
         raise KonnektError(
@@ -22,16 +22,17 @@ def _load_kre8_config() -> dict:
             model="",
             task="load_config",
             message=(
-                f"kre8.yaml not found at {_KRE8_CONFIG_PATH} — "
-                "copy kre8.yaml.example and fill in your values"
+                f"secrets.yaml not found at {_SECRETS_CONFIG_PATH} — "
+                "copy secrets.yaml.example and fill in your values"
             ),
+            category="no_creds",
         )
     except Exception as e:
         raise KonnektError(
             provider="secrets",
             model="",
             task="load_config",
-            message=f"Failed to parse kre8.yaml: {e}",
+            message=f"Failed to parse secrets.yaml: {e}",
         )
 
 
@@ -43,7 +44,10 @@ def _get_provider_secret_map() -> dict[str, str]:
             provider="secrets",
             model="",
             task="load_config",
-            message="kre8.yaml is missing konnekt.secrets — check kre8.yaml.example",
+            message=(
+                "secrets.yaml is missing konnekt.secrets — check secrets.yaml.example"
+            ),
+            category="no_creds",
         )
     return secrets
 
@@ -56,7 +60,10 @@ def _get_gcp_project_id() -> str:
             provider="secrets",
             model="",
             task="load_config",
-            message="kre8.yaml is missing gcp.project_id — check kre8.yaml.example",
+            message=(
+                "secrets.yaml is missing gcp.project_id — check secrets.yaml.example"
+            ),
+            category="no_creds",
         )
     return project_id
 
@@ -82,6 +89,7 @@ def get_secret(name: str) -> str:
             model="",
             task="get_secret",
             message=f"GCP Secret Manager fetch failed for '{name}': {e}",
+            category="invalid_secret_store",
         )
 
 
@@ -95,7 +103,8 @@ def get_api_key(provider: str) -> str:
             task="get_api_key",
             message=(
                 f"No secret mapping for provider '{provider}' "
-                "in kre8.yaml konnekt.secrets"
+                "in secrets.yaml konnekt.secrets"
             ),
+            category="no_creds",
         )
     return get_secret(secret_name)
