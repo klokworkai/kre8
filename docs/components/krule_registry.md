@@ -30,6 +30,8 @@ krule
 > - `D` (Deny) — hard-blocks a resource, service, or attribute outright. No carve-outs at the krule level.
 > - `A` (Allow) — explicitly permits a resource or pattern. An Allow is always paired with a `limit` — an Allow without a Limit is invalid and rejected at authoring time in konsole.
 >
+> `Exception` was considered and dropped — the use case is real (deny globally, carve out for one skope) but adds precedence complexity. Revisit post-OSS.
+>
 > Absent a krule, i2d2 designs freely using full LLM capability. krules constrain at gate time (konform), not at design time.
 
 > **RESOLVED — NLP → Structured conversion via konsole (post-OSS design session for full implementation)**

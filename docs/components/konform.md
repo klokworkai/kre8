@@ -59,4 +59,8 @@ ADR-003 · ADR-004 · ADR-005 · ADR-006
 - Full design session needed — after krule_registry design session
 - skope schema design
 - krule_registry schema design — DEAL implementation, storage format
-- Cost estimation logic in kg2
+- Cost estimation logic in kg2 — Cost is the recommended high-precedence
+  krule on every skope, to catch unconstrained/expensive designs at kg2
+  without blocking i2d2's design freedom at kg1. Open question: how does
+  i2d2 signal to the user that a design passed kg1 but has a probable kg2
+  violation, before kanvas assembly is complete?

@@ -80,6 +80,16 @@ kiosk         (TODO)
 
 ---
 
+## Future Direction (deferred)
+
+**MCP-wrapped execution** — kre8 does not execute IaC; it produces validated
+kanvas and HCL only. A future Enterprise direction may add execution via an
+MCP wrapper around an existing solution (e.g. OpenTofu MCP), rather than
+engineering execution natively. Revisit post-OSS, and only if the
+implementation cost via an MCP wrapper is low.
+
+---
+
 ## Repository Structure
 
 ```
