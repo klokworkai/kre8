@@ -1,5 +1,5 @@
 # kiosk — Component Design
-**Status:** TODO | **Folder:** `kiosk/`
+**Status:** INPROGRESS (scaffold in place, no wiring yet) | **Folder:** `kiosk/`
 
 ---
 
@@ -18,16 +18,36 @@ exists at any given time.
 
 ---
 
+## Current State
+
+Scaffold implemented: `server.py` (FastAPI app, `/` serves `static/index.html`,
+`/health`, `/static` mount, `POST /shutdown` — responds first, then schedules
+a graceful `SIGTERM` via `asyncio.get_running_loop().call_later()`, must be
+`async def` since a sync route runs in a worker thread with no event loop),
+`__main__.py` (`python -m kiosk`, no console-script entry point yet — see
+`pyproject.toml` packaging gap in `CLAUDE.md`), and `static/index.html` +
+`style.css` + `app.js`. The page has the intent textarea, an output box, and
+Design / Konnekt / Close buttons. Only Close is wired — it POSTs `/shutdown`
+and disables the page. Design and Konnekt are present in the DOM but have no
+click handlers; konnekt init-on-launch, manual re-init, and the i2d2
+dummy-run flow described below are all still unwired.
+
 ## Responsibilities (v0 — this build)
 
 - **konnekt init on launch** — kiosk calls konnekt's init/probe every time it
   starts, before anything else runs. Hard stop on failure — no degraded mode,
   no partial launch.
 - **Categorized init failure** — failures are surfaced as one of three
-  categories, not a raw exception string:
-  - NO_CREDS (no credentials defined for the provider in `secrets.yaml`)
-  - INVALID_SECRET_STORE (`secrets.yaml` has project + secret name configured, but the GCP Secret Manager call fails)
-  - INVALID_API_KEYS (key retrieved fine, but the model provider rejected it)
+  categories, not a raw exception string (now implemented on the konnekt
+  side as `KonnektError.category`; kiosk-side display wiring is still open):
+  - `no_creds` (no credentials defined for the provider in `secrets.yaml`)
+  - `invalid_secret_store` (`secrets.yaml` has project + secret name configured, but the GCP Secret Manager call fails)
+  - `invalid_api_keys` (key retrieved fine, but the model provider rejected it)
+  - if `probe_all()` fails for more than one provider and the categories
+    differ, `KonnektError.category` is `None` and
+    `KonnektError.category_breakdown: dict[provider, category]` carries the
+    per-provider detail — kiosk should display this breakdown rather than
+    guessing from a single top-level category
 - **Manual re-init** — always available, not gated behind any other app
   state. Used after key rotation, `secrets.yaml` edits, or a transient failure.
 - **Dummy run** — accepts NL input, `POST`s to i2d2 `/process`, displays the
@@ -87,17 +107,16 @@ Parked).
 ## TODO
 
 **Design:**
-- Map konnekt/GCP SM exception types precisely into the three init-failure
-  categories (NO_CREDS / INVALID_SECRET_STORE / INVALID_API_KEYS) —
-  `probe_all()` currently raises with a raw per-provider error string;
-  categorization logic doesn't exist yet. See `docs/components/konnekt.md`
-  for the category definitions and the deferred auto-fallback direction.
-- Define the dummy-run UI: input box, Kit display format, static
+- Define exactly how `category` / `category_breakdown` render in the UI
+  (banner copy per category, how a multi-provider breakdown is laid out).
+- Define the dummy-run UI: Kit display format, static
   "not yet implemented" notice copy.
 
 **Code:**
-- `kiosk/` — scaffold FastAPI app + static assets, mirroring kollab's layout
 - Wire init-on-launch calling `konnekt.probe.probe_all()`, hard stop on
-  failure
-- Wire manual re-init endpoint/control
+  failure, surfacing `category`/`category_breakdown`
+- Wire manual re-init endpoint/control (Design/Konnekt buttons currently
+  inert)
 - Wire dummy-run: form → `POST i2d2/process` → render Kit → static notice
+- Console-script entry point (`kre8` → `kiosk.__main__:main`) blocked on the
+  `pyproject.toml` packaging gap — see `CLAUDE.md` Pending Action Items

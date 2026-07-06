@@ -70,14 +70,14 @@ The probe validates connectivity to each configured provider and writes a verifi
 - Hard-fails kiosk's launch if any configured provider fails probe (current behaviour — see Auto-Fallback direction below for the planned change)
 - If a provider is unreachable, all roles assigned to that provider cannot proceed. konnekt raises a clear "unable to proceed" error identifying the affected role(s). User must reassign each affected role to a validated working model in `secrets.yaml` and re-run init.
 - Manual re-init: triggered from kiosk, always available, not gated behind any other app state. Use after key rotation, `secrets.yaml` edits, or a transient failure.
-- Failure categorization: kiosk surfaces init/probe failures as one of three categories:
-  - **NO_CREDS** — no credentials defined for the provider in `secrets.yaml`
-  - **INVALID_SECRET_STORE** — `secrets.yaml` has the project and secret name configured, but the GCP Secret Manager call for it fails (not-found, unreachable, or any other GCP-side failure)
-  - **INVALID_API_KEYS** — a key was retrieved successfully from GCP SM, but the model provider rejected it
-  
-  Not yet implemented — `probe_all()` currently raises with a raw per-provider error string only; see TODO.
+- Failure categorization: every raise site in `secrets.py`/`probe.py` carries a `category` on `KonnektError`, one of:
+  - **no_creds** — no credentials defined for the provider in `secrets.yaml` (missing file, missing `konnekt.secrets`/`gcp.project_id`, no mapping for the provider)
+  - **invalid_secret_store** — `secrets.yaml` has the project and secret name configured, but the GCP Secret Manager call for it fails (not-found, unreachable, or any other GCP-side failure)
+  - **invalid_api_keys** — a key was retrieved successfully from GCP SM, but the model provider rejected it (`probe_provider()`'s `litellm.completion()` failure)
 
-> `probe.py` implemented. `secrets.yaml` implemented. Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles and instructs reassignment in `secrets.yaml`. Failure categorization for kiosk display is not yet implemented.
+  `probe_all()` runs two separate try/except blocks per provider (one around `get_api_key()`, one around `probe_provider()`) so the category reflects which stage actually failed. Its final summary `KonnektError` sets `category` only when every failed provider shares the same one; when providers fail for different reasons, `category` is `None` and the new `category_breakdown: dict[provider, category]` field carries the full per-provider detail so kiosk can display each cause without guessing or string-parsing.
+
+> `probe.py` implemented. `secrets.yaml` implemented (renamed from `kre8.yaml`). Startup hard-fail on unreachable provider is live — `probe_all()` raises `KonnektError` listing affected roles, category (or per-provider breakdown), and instructs reassignment in `secrets.yaml`. Failure categorization is implemented on the konnekt side; kiosk-side display wiring is still open (see `docs/components/kiosk.md`).
 
 ## Auto-Fallback (direction decided, mechanism deferred)
 
@@ -138,9 +138,19 @@ GCP Secret Manager via ADC. Secret names and GCP project ID are provided by the 
 
 ```python
 class KonnektError(Exception):
-    def __init__(self, provider: str, model: str, task: str, message: str):
+    def __init__(
+        self,
+        provider: str,
+        model: str,
+        task: str,
+        message: str,
+        category: Literal["no_creds", "invalid_secret_store", "invalid_api_keys"] | None = None,
+        category_breakdown: dict[str, str] | None = None,
+    ):
         ...
 ```
+
+`category` and `category_breakdown` are optional/defaulted — most raise sites (unknown role, bad model_select index) don't set one. See Model Registry and Probe above for which raise sites in `secrets.py`/`probe.py` set which category.
 
 Raises on: unknown role, bad model_select index, GCP SM failure, provider API error, timeout. i2d2 catches and decides — retry, fallback, surface to user. konnekt never retries.
 
@@ -167,7 +177,7 @@ konnekt/
   konnekt.py      # complete() — main entry point
   models.py       # MODEL_REGISTRY + ROLE_DEFAULTS + resolve_model()
   secrets.py      # GCP SM fetch + _secret_cache; reads secrets.yaml for project ID + secret names
-  probe.py        # TODO: provider connectivity probe + resolved_models.yaml writer
+  probe.py        # provider connectivity probe + resolved_models.yaml writer + failure categorization
   config.py       # KonnektConfig
   errors.py       # KonnektError
   requirements.txt
@@ -177,16 +187,15 @@ konnekt/
 
 ## Test Coverage
 
-- **Stub tests** (`stub_tests/test_konnekt.py`): 61 tests — all passing
-- **Live tests** (`integration_tests/test_konnekt_live.py`): 14 tests — 12/14 passing (2 Gemini blocked by depleted prepay credits, not a code issue)
+- **Stub tests** (`stub_tests/test_konnekt.py`, `stub_tests/test_probe.py`): 70 tests — all passing, including category coverage for all three categories plus the mixed-category `probe_all()` case
+- **Live tests** (`integration_tests/test_konnekt_live.py`): 22 tests — skip without real GCP credentials configured (`-m integration` to run against live providers)
 
 ---
 
 ## TODO
 
 - `secrets.yaml` role override loading — wire `konnekt.role_overrides` into `resolve_model()`
-- Rename `kre8.yaml` → `secrets.yaml` repo-wide (config loader, `.gitignore`, `kre8.yaml.example` → `secrets.yaml.example`, all doc references)
-- Categorize `probe_all()` failures into NO_CREDS / INVALID_SECRET_STORE / INVALID_API_KEYS so kiosk can display them distinctly (see `docs/components/kiosk.md`) — manual re-init is now kiosk's job, not a CLI command
+- Manual re-probe / key re-sync — triggered from a kiosk button calling `probe_all()` directly (see ADR-008); no CLI planned
 - Gemini live tests — re-enable when credits restored
 - `Attachment` type — define `media_type: str` + `data: str` (base64); wire into `complete()` signature and LLM call construction
 - Tool/MCP-calling support — pass tool defs into `litellm.completion`, handle `tool_calls`, loop; needed for koder's Terraform MCP access
