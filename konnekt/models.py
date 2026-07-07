@@ -2,6 +2,7 @@
 # Copyright 2026 Klokwork AI Inc.
 
 from konnekt.errors import KonnektError
+from konnekt.secrets import get_role_overrides
 
 # family index → provider name + tier variants
 MODEL_REGISTRY: dict[int, dict] = {
@@ -66,8 +67,13 @@ def resolve_model(
                 task="resolve_model",
                 message=f"Unknown role '{role}' — not in ROLE_DEFAULTS",
             )
-        family_idx, tier_idx = ROLE_DEFAULTS[role]
-        source = f"role={role}"
+        overrides = get_role_overrides()
+        if role in overrides:
+            family_idx, tier_idx = overrides[role]
+            source = f"role_override={role}"
+        else:
+            family_idx, tier_idx = ROLE_DEFAULTS[role]
+            source = f"role={role}"
 
     if family_idx not in MODEL_REGISTRY:
         raise KonnektError(

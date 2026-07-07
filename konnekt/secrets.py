@@ -12,10 +12,15 @@ _secret_cache: dict[str, str] = {}
 _SECRETS_CONFIG_PATH = Path(__file__).parent.parent / "secrets.yaml"
 
 
+def _read_config_file() -> dict:
+    """Raw secrets.yaml read — no error wrapping. Raises FileNotFoundError as-is."""
+    with open(_SECRETS_CONFIG_PATH) as f:
+        return yaml.safe_load(f) or {}
+
+
 def _load_kre8_config() -> dict:
     try:
-        with open(_SECRETS_CONFIG_PATH) as f:
-            return yaml.safe_load(f) or {}
+        return _read_config_file()
     except FileNotFoundError:
         raise KonnektError(
             provider="secrets",
@@ -34,6 +39,21 @@ def _load_kre8_config() -> dict:
             task="load_config",
             message=f"Failed to parse secrets.yaml: {e}",
         )
+
+
+def get_role_overrides() -> dict[str, tuple[int, int]]:
+    """Load optional konnekt.role_overrides from secrets.yaml.
+
+    role_overrides is opt-in — a missing secrets.yaml or a missing/empty
+    role_overrides key both resolve to {} (fall through to ROLE_DEFAULTS),
+    not an error. Only get_api_key/probe_all hard-fail on missing config.
+    """
+    try:
+        config = _read_config_file()
+    except FileNotFoundError:
+        return {}
+    overrides = (config.get("konnekt") or {}).get("role_overrides") or {}
+    return {role: tuple(value) for role, value in overrides.items()}
 
 
 def _get_provider_secret_map() -> dict[str, str]:

@@ -70,6 +70,56 @@ def test_resolve_model_select_groq_versatile():
     assert model == "groq/llama-3.3-70b-versatile"
 
 
+# --- resolve_model: role_overrides ---
+
+
+def test_resolve_model_role_override_used():
+    fake_overrides = {"architect": (3, 2)}
+    with patch("konnekt.models.get_role_overrides", return_value=fake_overrides):
+        provider, model = resolve_model("architect")
+    assert provider == "anthropic"
+    assert model == "anthropic/claude-opus-4-6"
+
+
+def test_resolve_model_no_override_falls_to_role_defaults():
+    with patch("konnekt.models.get_role_overrides", return_value={}):
+        provider, model = resolve_model("architect")
+    assert provider == "anthropic"
+    assert model == "anthropic/claude-sonnet-4-6"
+
+
+def test_resolve_model_explicit_select_beats_override():
+    fake_overrides = {"architect": (3, 2)}
+    with patch("konnekt.models.get_role_overrides", return_value=fake_overrides):
+        provider, model = resolve_model("architect", model_select=(1, 1))
+    assert provider == "openai"
+    assert model == "openai/gpt-4o-mini"
+
+
+def test_get_role_overrides_missing_secrets_yaml_returns_empty():
+    from konnekt.secrets import get_role_overrides
+
+    with patch("konnekt.secrets._SECRETS_CONFIG_PATH", "/nonexistent/secrets.yaml"):
+        assert get_role_overrides() == {}
+
+
+def test_get_role_overrides_missing_key_returns_empty():
+    from konnekt.secrets import get_role_overrides
+
+    fake_config = {"konnekt": {"secrets": {}}}
+    with patch("konnekt.secrets._read_config_file", return_value=fake_config):
+        assert get_role_overrides() == {}
+
+
+def test_get_role_overrides_parses_lists_to_tuples():
+    from konnekt.secrets import get_role_overrides
+
+    fake_config = {"konnekt": {"role_overrides": {"coder": [3, 1]}}}
+    with patch("konnekt.secrets._read_config_file", return_value=fake_config):
+        result = get_role_overrides()
+    assert result == {"coder": (3, 1)}
+
+
 # --- resolve_model: error cases ---
 
 
